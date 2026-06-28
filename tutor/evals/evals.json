@@ -1,0 +1,26 @@
+{
+  "skill_name": "tutor",
+  "evals": [
+    {
+      "id": 0,
+      "name": "buggy-cache-understand",
+      "prompt": "I keep getting stale numbers out of our reports service and I think it's this memoize decorator. Don't just patch it for me — teach me how this caching code actually works and why it's misbehaving, so I genuinely understand it and could spot the same class of bug next time. The file is cache.py.",
+      "expected_output": "Opens a teaching session: creates Understanding-Checklist.md, orients (asks what the learner already knows / their level), starts problem-first instead of dumping the fix, and pauses to check understanding. Should NOT just hand over a corrected file. Likely surfaces the shared mutable default `_store` / cross-function key collision as the problem to be understood.",
+      "files": ["fixtures/cache.py"]
+    },
+    {
+      "id": 1,
+      "name": "rust-ownership-concept",
+      "prompt": "I'm a Python dev and I keep bouncing off Rust's ownership and borrowing — every explanation I read makes sense in the moment and then evaporates. Teach it to me properly so I can actually explain it back. Explain like I'm an intern.",
+      "expected_output": "Creates an Understanding-Checklist, anchors to the learner's Python background (closest-familiar-construct comparison), respects the ELI-intern depth, teaches incrementally with verification rather than a wall of text, and explicitly calls out where the Python analogy breaks down. Uses or offers a visual model.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "auth-flow-walkthrough",
+      "prompt": "New on this team and I need to actually understand how request auth flows through our orders API before I touch it — walk me through auth.py end to end so it sticks. I don't want a summary I'll forget in an hour.",
+      "expected_output": "Creates an Understanding-Checklist, orients first, walks the control/data flow of authenticate() and require_auth() with a visualization (sequence/flow diagram), surfaces branches and edge cases (missing token, bad format, clock skew, bad signature), and checks understanding incrementally — e.g. asks the learner to predict a branch — rather than monologuing the whole file.",
+      "files": ["fixtures/auth.py"]
+    }
+  ]
+}
