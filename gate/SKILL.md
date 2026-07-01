@@ -59,7 +59,10 @@ applying `atomic-changes`. That is how a gate silently becomes theater.
 - **★ is a Skill-tool invocation.** Load the named skill and follow *it*. Do not
   reproduce its guidance from memory, and do not substitute an ad-hoc shortcut for
   the skill. If the skill's action turns out to be a no-op for this diff, still load
-  it, apply its check, and record that it found nothing -- never skip the load.
+  it, apply its check, and record that it found nothing -- never skip the load. For the
+  audit stages (2, 3, 5) that load happens inside the stage's finding subagent (see
+  *Audit stages run the find in a subagent*), not on the main thread; the rule is
+  unchanged, only where the skill loads.
 - **A `bash` block runs verbatim.** Adapt only the bracketed `<placeholders>` and
   config-resolved values; do not run an approximation of the command.
 - **Record each stage as you finish it:** the stage, whether you invoked a skill
@@ -205,6 +208,33 @@ The ledger is gate's working memory and its audit trail -- "here is everything g
 considered, and why." A dismissed finding is never silent; it is a ledger line. This
 is what makes the floor loop (1-5) and the crew+fold loop (7-8) converge instead of
 rediscovering the same findings each pass.
+
+## Audit stages run the find in a subagent
+
+Stages 2 (SSM), 3 (conventions), and 5 (hygiene) are **audits**: the skill each calls
+produces findings, it does not edit the tree. That is the skills' own contract --
+`state-space-minimization`, the conventions packs, and `scrub-ai-tells` all emit
+findings and stop; applying is gate's job, not theirs. So split each stage into a find
+half and an apply half:
+
+- **Find -- in a subagent (`Agent` tool).** Spawn one subagent for the stage. Hand it
+  `intent.md`, the diff (`git --no-pager diff <base>...HEAD`), and the resolved inputs
+  the stage names below. Instruct it to load the named skill via its own Skill tool, run
+  that skill's audit, and **return findings only** -- a structured list of `file:line`,
+  the finding, and a suggested change. It makes no edits.
+- **Apply -- on the main thread.** Take the returned findings through the disposition
+  loop already defined above: read the ledger, restate each finding, confirm it with
+  evidence (read the code, run a probe), apply if valid, record the disposition, and
+  re-run the floor after each batch.
+
+Why the split. Because the skill only finds, applying is gate's job either way; keeping
+apply and the floor re-runs on the main thread keeps the orchestrator in control of the
+working tree and the loop. The subagent is for the finding, where a clean context with
+no stake in the code the main thread just wrote or fixed buys the same independence
+stage 7 gets from the crew, applied to the cheaper audits, and without piling each
+skill's load and probes into the main context. If the agent cannot spawn subagents, run
+the audit inline on the main thread and note the lost independence, the same fallback
+posture as stage 7.
 
 ## Running against an existing open PR
 
@@ -400,15 +430,17 @@ so the pipeline and its first stage do not share a name.)
 
 ### Stage 2: SSM audit ★
 
-Invoke **`state-space-minimization`** via the Skill tool, fed `intent.md` -- load
-the skill and run its audit; do not audit "for SSM principles" from memory. For
-each finding: restate it, confirm with evidence (read the code, run a probe), apply
-if valid, re-run the floor after each batch. SSM carries the language-agnostic
-state-shrinking
-principles (parse-don't-validate, drop speculative tolerance, validate at the
-boundary, no dead or speculative code), so the conventions stage does not restate
-them. Common hits: speculative tolerance, defensive code on type-guaranteed
-invariants, validation in the wrong layer, public surface wider than callers need.
+Run the **`state-space-minimization`** audit in a finding subagent (see *Audit stages
+run the find in a subagent*): hand it `intent.md` and the diff, have it load the skill
+and return SSM's findings. Do not audit "for SSM principles" from memory. Then, on the
+main thread, work the returned findings: restate each, confirm with evidence (read the
+code, run a probe), apply if valid, re-run the floor after each batch.
+
+SSM carries the language-agnostic state-shrinking principles (parse-don't-validate,
+drop speculative tolerance, validate at the boundary, no dead or speculative code), so
+the conventions stage does not restate them. Common hits: speculative tolerance,
+defensive code on type-guaranteed invariants, validation in the wrong layer, public
+surface wider than callers need.
 
 ### Stage 3: conventions ⚙★
 
@@ -416,18 +448,21 @@ Conventions are **distributed across three layers**, which keeps gate itself
 language- and project-free:
 
 1. **General principles** -- already carried by SSM (stage 2).
-2. **Language idiom** -- load the conventions pack for the detected language:
+2. **Language idiom** -- the conventions pack for the detected language:
    **`rust-conventions`** for Rust; the TypeScript and Python packs are planned.
    The pack states the general principles in the language's idiom plus the
    language-specific mechanisms (e.g. for Rust: `.expect` over `.unwrap`,
    associated types over boxed jokers, the clippy restriction-lint gotchas).
-3. **Project specifics** -- read the repo's **AGENTS.md** (root + the nested one
-   for the module you touched). This is where a project's own conventions,
-   crates, naming, and reviewer expectations live. The conventions-source key in
-   config points at it; comply with what it declares.
+3. **Project specifics** -- the repo's **AGENTS.md** (root + the nested one for the
+   module you touched), located via the conventions-source key in config. This is where
+   a project's own conventions, crates, naming, and reviewer expectations live.
 
-Read all three and comply. Where the language pack and the repo AGENTS.md
-disagree, the repo wins (it has declared its own rules).
+Run the conventions audit in a finding subagent (see *Audit stages run the find in a
+subagent*): hand it `intent.md`, the diff, the language-pack name, and the
+conventions-source path, and have it load the pack via its Skill tool, read the named
+AGENTS.md files, and return findings where the diff violates layer 2 or 3. Where the
+language pack and the repo AGENTS.md disagree, the repo wins (it has declared its own
+rules). Then apply the returned findings on the main thread as in stage 2.
 
 ### Stage 4: mutation testing ⚙
 
@@ -444,18 +479,20 @@ testing is "better than nothing," not proof of correctness.
 
 ### Stage 5: hygiene sweep ★
 
-Config-toggle. Invoke **`scrub-ai-tells`** via the Skill tool on the **code diff**
--- no em dashes, no AI-tell filler in code, comments, or test names. The grep below
-is a pre-filter for the loudest tell, *not* the stage: a clean grep does not
-discharge the stage, you still load and run `scrub-ai-tells` itself.
+Config-toggle. Run the **`scrub-ai-tells`** audit on the **code diff** in a finding
+subagent (see *Audit stages run the find in a subagent*): hand it the diff and have it
+load the skill and return the tells it finds -- em dashes, AI-tell filler in code,
+comments, or test names. The grep below is a pre-filter for the loudest tell, *not* the
+stage: a clean grep does not discharge the stage, the subagent still loads and runs
+`scrub-ai-tells` itself.
 
 ```bash
 git --no-pager diff <base>...HEAD | grep -nE "—|–"
 ```
 
-This must be empty here (and later on the PR body and commit messages). This is the
-*code* hygiene pass; the *presentation* scrub (the PR body) rides with voice at
-stage 10.
+Apply the returned fixes on the main thread, then re-check. This must be empty here
+(and later on the PR body and commit messages). This is the *code* hygiene pass; the
+*presentation* scrub (the PR body) rides with voice at stage 10.
 
 > **[LOOP 1-5 until green, capped at the floor `max-rounds` from config.]**
 > Run the floor through the hygiene sweep, apply fixes, re-run from the floor.
