@@ -303,9 +303,25 @@ stage that calls it will run.
 - **`code-review`** -- only if the repo's AGENTS.md declares a label protocol
   (stage 11). This is the **repo's** code-review skill, checked in the repo, not
   the global store. No protocol -> stage 11 skipped -> not required.
-- **`review-crew`** -- stage 7's *premium* implementation, not required. If absent,
-  stage 7 falls back to the built-in subagent review panel (which needs only the
-  `Agent` tool). Note the fallback; never block on review-crew.
+- **`review-crew`** -- stage 7's *premium* implementation, not required, and probed
+  differently from the others: the store holds only its `SKILL.md` wrapper, while stage
+  7 runs the uv project that wrapper points at. Probe that project now so a broken
+  Implementation A surfaces here, not as an intermittent stage-7 fallback:
+
+  ```bash
+  store="${SKILLS_DIR:-$HOME/.agents/skills}"
+  rc_path=$(grep -oE '`[^`]*/[^`]*review-crew`' "$store/review-crew/SKILL.md" 2>/dev/null | head -1 | tr -d '`')
+  rc_path="${rc_path/#\~/$HOME}"
+  if [ -n "$rc_path" ] && [ -f "$rc_path/pyproject.toml" ]; then
+    echo "review-crew: runnable project at $rc_path -- stage 7 uses the real crew (A)"
+  else
+    echo "review-crew: no runnable uv project -- stage 7 uses the built-in panel (B)"
+  fi
+  ```
+
+  If it reports the built-in panel while you expected the crew, fix the install before
+  running; the crew is the point of the stage. Either way, never *block* the run on
+  review-crew.
 - **`retro`** -- stage 13, post-merge, built separately. If absent, warn that the
   retro stage will be skipped; never block a run on it.
 
@@ -322,7 +338,7 @@ lock="$HOME/.agents/.skill-lock.json"
 # always-on companions + the detected language's pack (rust-conventions for Rust).
 # set -- + for s in "$@" word-splits correctly in BOTH bash and zsh (an unquoted
 # $var does NOT split under zsh -- do not regress to `for s in $required`).
-set -- intent state-space-minimization scrub-ai-tells review-crew atomic-changes git-factor voice rust-conventions
+set -- intent state-space-minimization scrub-ai-tells atomic-changes git-factor voice rust-conventions
 missing=""; lines=""
 for s in "$@"; do
   if [ ! -e "$store/$s" ]; then
@@ -464,15 +480,42 @@ The point of this stage is an **independent, adversarial review** of the pushed 
 against `intent.md`, producing findings and a verdict on the ladder **MERGE >
 APPROVE_WITH_NOTES > BLOCK**. The value is cross-reviewer diversity (a second
 perspective catches what the first is blind to) and *disagreement as signal* (where
-reviewers conflict is where to dig). Two implementations; pick by availability. Either
-way the output is findings + a verdict, so stage 8 (fold) is unchanged.
+reviewers conflict is where to dig). Two implementations; **the choice is decided by the
+probe below, never by feel.** Either way the output is findings + a verdict, so stage 8
+(fold) is unchanged.
 
-**Implementation A -- `review-crew`** (the full adversarial debate; use when it is
-installed). Load **`review-crew`** and run it in branch mode against the branch you
-pushed, passing `intent.md` as the description file:
+**Pick the implementation deterministically.** review-crew is not auto-loaded, so its
+absence from your loaded-skill list means nothing; do not decide from that list. Run this
+probe. It resolves the crew's uv project from the path the installed review-crew skill
+declares (the single source of truth) and confirms it is runnable:
 
 ```bash
-uv run --project <path/to/review-crew> review \
+store="${SKILLS_DIR:-$HOME/.agents/skills}"
+rc_path=$(grep -oE '`[^`]*/[^`]*review-crew`' "$store/review-crew/SKILL.md" 2>/dev/null | head -1 | tr -d '`')
+rc_path="${rc_path/#\~/$HOME}"
+if [ -n "$rc_path" ] && [ -f "$rc_path/pyproject.toml" ]; then
+  echo "REVIEW_CREW=$rc_path"
+else
+  echo "REVIEW_CREW=ABSENT"
+fi
+```
+
+- **`REVIEW_CREW=<path>`** -> **Implementation A**, using `<path>` as the `--project`
+  value. This is the expected case whenever review-crew is installed.
+- **`REVIEW_CREW=ABSENT`** -> **Implementation B**.
+
+Once the probe selects A, a `uv run` failure is a hard error to fix and surface, **not** a
+reason to switch to B. Falling back to B is only ever correct when the probe printed
+`ABSENT`; a silent downgrade on a runnable install is the exact failure this stage exists
+to prevent.
+
+**Implementation A -- `review-crew`** (the full adversarial debate; selected when the
+probe prints `REVIEW_CREW=<path>`). Load **`review-crew`** for the invocation details and
+run it in branch mode against the branch you pushed, using the probe's `<path>` as
+`--project` and passing `intent.md` as the description file:
+
+```bash
+uv run --project <path> review \
        --branch <branch> --repo <owner/repo> --base <base> \
        --description-file /tmp/<branch>-intent.md --no-post
 ```
@@ -492,8 +535,8 @@ and a `## Why`. So:
 The verdict + findings live in `pr-comment.md` (the `review.json` `findings` array is
 often empty). It runs in the background for minutes; watch for the session dir.
 
-**Implementation B -- built-in review panel** (the portable fallback; use when
-review-crew is not installed). First, say so plainly -- print:
+**Implementation B -- built-in review panel** (the portable fallback; selected only when
+the probe printed `REVIEW_CREW=ABSENT`). First, say so plainly -- print:
 
 > ⓘ review-crew not found -- running a built-in subagent review panel instead.
 >   (The full adversarial review crew is coming soon.)
