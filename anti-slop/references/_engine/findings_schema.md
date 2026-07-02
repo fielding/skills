@@ -1,6 +1,6 @@
-# Findings Schema — Anti-Slop
+# Findings Schema -- Anti-Slop
 
-Write your topic file in exactly this structure. Keep it tight — the synthesis step reads it,
+Write your topic file in exactly this structure. Keep it tight -- the synthesis step reads it,
 not a human. Evidence over prose.
 
 ```
@@ -38,5 +38,5 @@ Things worth a closer look but not proven.
 ```
 
 Severity discipline: a BLOCKER means the project fails its basic promise of being real or
-safe. Don't spend them on style. Don't withhold them when earned — a non-building repo with a
+safe. Don't spend them on style. Don't withhold them when earned -- a non-building repo with a
 "production-ready" README is a BLOCKER, not a MEDIUM.

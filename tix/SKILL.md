@@ -9,13 +9,13 @@ description: >
 allowed-tools: Bash, Read
 ---
 
-# tix — issue tracker
+# tix -- issue tracker
 
 `tix` tracks issues per-repo in a `.tix/` directory. `.tix/issues.jsonl` is the
 source of truth: plain JSONL, git-friendly, one issue per line. Run `tix ready`
 before starting work to see what's unblocked.
 
-The tool itself is a standalone binary — install it from
+The tool itself is a standalone binary -- install it from
 [github.com/fielding/tix](https://github.com/fielding/tix). This skill is just the
 command reference and workflow conventions for it.
 
@@ -52,6 +52,6 @@ scripting: `id=$(tix add "fix login" -p 2 -q)`).
 
 ## Notes
 
-- Priorities run 1–5, where 1 is highest.
+- Priorities run 1-5, where 1 is highest.
 - `dep add <id> blocks <target>` reads in that direction: `<id>` must finish
   before `<target>` becomes ready.

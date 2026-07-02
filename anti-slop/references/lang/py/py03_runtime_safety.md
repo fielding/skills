@@ -1,8 +1,8 @@
 First read prompts/shared_rules.md and prompts/findings_schema.md. Read .antislop/evidence/stack.md.
 
-# Topic: Python — Runtime Safety (injection, boundaries, deserialization)
+# Topic: Python -- Runtime Safety (injection, boundaries, deserialization)
 
-Goal: Catch the Python-specific runtime hazards vibe-coded apps leave open — injection,
+Goal: Catch the Python-specific runtime hazards vibe-coded apps leave open -- injection,
 unsafe deserialization, and unvalidated boundaries.
 
 Scan (adapt to web/API/CLI/data surfaces from stack.md):
@@ -16,19 +16,19 @@ Scan (adapt to web/API/CLI/data surfaces from stack.md):
   rg -n "requests\.(get|post)\((?!.*timeout)|httpx\.(get|post)\((?!.*timeout)" --glob '*.py'   # no timeout
 
 Checks:
-1. **Code/command injection** — `eval`/`exec`/`os.system`/`subprocess(..., shell=True)` with
+1. **Code/command injection** -- `eval`/`exec`/`os.system`/`subprocess(..., shell=True)` with
    interpolated input.
-2. **Unsafe deserialization** — `pickle.loads`/`yaml.load` (without `SafeLoader`)/`marshal` on
+2. **Unsafe deserialization** -- `pickle.loads`/`yaml.load` (without `SafeLoader`)/`marshal` on
    data that could be attacker-controlled. Classic RCE vector.
-3. **SQL injection** — `%`/`+`/f-string/`.format` interpolation into `execute()`/`text()`
+3. **SQL injection** -- `%`/`+`/f-string/`.format` interpolation into `execute()`/`text()`
    instead of parameterized queries or the ORM.
-4. **Template / SSTI & XSS** — `render_template_string` with user input, `autoescape=False`,
+4. **Template / SSTI & XSS** -- `render_template_string` with user input, `autoescape=False`,
    `|safe`, `Markup()` on untrusted data.
-5. **Unvalidated external input** — Flask/FastAPI/Django request data parsed and used without a
+5. **Unvalidated external input** -- Flask/FastAPI/Django request data parsed and used without a
    schema (pydantic/marshmallow). FastAPI's typed models help; raw `request.json` does not.
    No validation library present anywhere is itself a signal.
-6. **Path traversal** — user-controlled paths into `open`/`send_file`/`os.path.join`.
-7. **`assert` for validation** — asserts enforcing security/auth invariants are stripped under
+6. **Path traversal** -- user-controlled paths into `open`/`send_file`/`os.path.join`.
+7. **`assert` for validation** -- asserts enforcing security/auth invariants are stripped under
    `python -O`; they must not be the only guard.
 8. **Missing timeouts** on outbound HTTP; **debug mode** (`app.run(debug=True)`, `DEBUG=True`)
    shipped on.

@@ -3,8 +3,8 @@ Also read .antislop/findings/d01_custody_proof.md if it exists.
 
 # Topic: Custody & Security Claims vs. Proven Reality
 
-Goal: Audit user- and marketing-facing claims specific to a wallet — "non-custodial",
-"audited", "secure", "your keys", endorsements — against what the audit actually proved. This
+Goal: Audit user- and marketing-facing claims specific to a wallet -- "non-custodial",
+"audited", "secure", "your keys", endorsements -- against what the audit actually proved. This
 is the wallet-specific sharpening of the universal docs-vs-reality topic.
 
   cat README.md 2>/dev/null
@@ -21,7 +21,7 @@ Hard BLOCKERS:
 - "Instant" / "zero fee" stated as always-true when it isn't.
 
 Cross-reference every security claim to a specific audit finding. A claim with no supporting
-evidence is a confident-lie — the worst slop signal, amplified by the fact that real money is
+evidence is a confident-lie -- the worst slop signal, amplified by the fact that real money is
 involved.
 
 Write findings to `.antislop/findings/d06_custody_claims.md`.

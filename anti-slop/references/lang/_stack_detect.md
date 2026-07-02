@@ -6,17 +6,17 @@ language pack from `toolchain_for_language_pack`. Mapping:
 | Signal (files present) | Pack | Status |
 |---|---|---|
 | package.json + .ts/.tsx | `lang/ts` | **implemented** |
-| package.json + .js/.jsx only | `lang/ts` (JS subset — skip type checks) | **implemented** |
+| package.json + .js/.jsx only | `lang/ts` (JS subset -- skip type checks) | **implemented** |
 | pyproject.toml / requirements.txt / setup.py | `lang/py` | **implemented** |
-| go.mod | `lang/go` | stub — not built |
-| Cargo.toml | `lang/rust` | stub — not built |
+| go.mod | `lang/go` | stub -- not built |
+| Cargo.toml | `lang/rust` | stub -- not built |
 | none of the above | none | run universal-only |
 
 Rules:
 - **Monorepo / polyglot**: if multiple toolchains are present, run each implemented pack and
   label findings by sub-project. Prefer the pack covering the security-critical surface.
 - **Unbuilt pack matched**: do NOT fabricate language-specific findings. Run universal-only,
-  and in the verdict state plainly: "language pack for <X> not yet implemented — toolchain
+  and in the verdict state plainly: "language pack for <X> not yet implemented -- toolchain
   checks (build/typecheck/lint/test) were NOT run; confidence is reduced." This lowers
   confidence, not the score (the synthesis renormalizes weights over the topics that ran).
 - Adding a pack later = drop a `lang/<name>/` folder with the same three-topic shape

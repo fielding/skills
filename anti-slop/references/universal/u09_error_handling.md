@@ -3,7 +3,7 @@ First read prompts/shared_rules.md and prompts/findings_schema.md. Read .antislo
 # Topic: Error Handling & Input Validation
 
 Goal: Find out whether the code survives anything but the happy path. Vibe-coded software
-demos beautifully and falls over on the first bad input, empty result, or network error —
+demos beautifully and falls over on the first bad input, empty result, or network error --
 because failure paths were never written.
 
 Scan (adapt to languages):
@@ -13,18 +13,18 @@ Scan (adapt to languages):
   rg -n "req\.body|req\.query|req\.params|request\.|searchParams\.get|os\.environ\[" --glob '!node_modules' | head -30
 
 Checks:
-1. **Swallowed errors** — empty catch blocks, `except: pass`, `.catch(() => {})`, ignored
+1. **Swallowed errors** -- empty catch blocks, `except: pass`, `.catch(() => {})`, ignored
    error returns (`_ = err`), errors logged-and-continued where they shouldn't be.
-2. **Unhandled async** — promises without catch, `await` with no try, fire-and-forget that
+2. **Unhandled async** -- promises without catch, `await` with no try, fire-and-forget that
    can reject; missing error boundaries.
-3. **Happy-path-only** — functions that assume success: no handling for empty/null results,
+3. **Happy-path-only** -- functions that assume success: no handling for empty/null results,
    404s, timeouts, rejected payments, failed writes.
-4. **Missing input validation at boundaries** — request bodies, query params, env vars,
+4. **Missing input validation at boundaries** -- request bodies, query params, env vars,
    external API responses, file contents, user input used without validation/parsing
    (no schema/zod/pydantic/manual checks). Trust placed directly in untrusted input.
-5. **Crash-on-malformed** — `JSON.parse`/`parseInt`/array access on data that could be
+5. **Crash-on-malformed** -- `JSON.parse`/`parseInt`/array access on data that could be
    malformed, with no guard.
-6. **Error messages that lie or leak** — generic "something went wrong" masking real failures,
+6. **Error messages that lie or leak** -- generic "something went wrong" masking real failures,
    or raw stack traces / internal details returned to callers.
 7. **No timeouts / retries** on network calls that need them.
 

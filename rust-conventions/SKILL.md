@@ -184,9 +184,9 @@ Do not annotate functions with `#[inline]`. Let the compiler decide; it is bette
 
 Use `tracing`. Pick the level by whether the reader must act:
 
-- **`error`** — requires action. Must carry actionable context: what failed, why, what to do. If there is nothing to do, it is not an error.
-- **`info`** — system behavior, including expected-and-handled error conditions.
-- **`debug`** — detail not wanted in production logs.
+- **`error`** -- requires action. Must carry actionable context: what failed, why, what to do. If there is nothing to do, it is not an error.
+- **`info`** -- system behavior, including expected-and-handled error conditions.
+- **`debug`** -- detail not wanted in production logs.
 - **Avoid `warn`.** It is ambiguous about whether action is needed. Either it matters (`error`) or it does not (`info`).
 
 Never log user content (prompts, message bodies, responses, file contents, anything PII-derived) at a level reachable in production. When logging an error that touches user data, log the error type or code, not the data. See "Redact PII and secrets" above; this is the logging face of the same rule.
@@ -252,12 +252,12 @@ Run clippy with warnings as errors (`cargo clippy -- -D warnings`), and prefer a
 
 Projects that turn on the clippy **restriction** group hit a recurring set of lints whose fixes are not obvious. Each one below otherwise costs a build round-trip:
 
-- **`shadow_unrelated`** — do not rebind a name to an unrelated value. When destructuring (e.g. an `into_parts()`), give the bindings fresh names rather than reusing the field names already in scope.
-- **`renamed_function_params`** — a trait-impl method must keep the trait's parameter names. To discard an unused stub parameter, write `let _: &T = param;`, not `_param` and not an untyped `let _`.
-- **`missing_trait_methods`** — derive errors with `#[derive(thiserror::Error)]`; do not hand-roll `impl std::error::Error`. This applies to test-only error types too.
-- **`empty_structs_with_brackets`** — write `struct X;`, not `struct X {}`.
-- **`unused_trait_names`** — when you import a trait only for its methods, write `use Trait as _;`.
-- **`missing_const_for_fn`** — a trivial-body function (a stub constructor) must be `const fn`. But a `const fn` cannot move a generic field with a destructor out of `self`, so a `new` constructor can be `const` while an `into_parts` that destructures `self` cannot.
-- **Intra-doc-link gotcha** — module-level `//!` intra-doc links to imported items do not resolve. Use a plain code span or an explicit path instead.
+- **`shadow_unrelated`** -- do not rebind a name to an unrelated value. When destructuring (e.g. an `into_parts()`), give the bindings fresh names rather than reusing the field names already in scope.
+- **`renamed_function_params`** -- a trait-impl method must keep the trait's parameter names. To discard an unused stub parameter, write `let _: &T = param;`, not `_param` and not an untyped `let _`.
+- **`missing_trait_methods`** -- derive errors with `#[derive(thiserror::Error)]`; do not hand-roll `impl std::error::Error`. This applies to test-only error types too.
+- **`empty_structs_with_brackets`** -- write `struct X;`, not `struct X {}`.
+- **`unused_trait_names`** -- when you import a trait only for its methods, write `use Trait as _;`.
+- **`missing_const_for_fn`** -- a trivial-body function (a stub constructor) must be `const fn`. But a `const fn` cannot move a generic field with a destructor out of `self`, so a `new` constructor can be `const` while an `into_parts` that destructures `self` cannot.
+- **Intra-doc-link gotcha** -- module-level `//!` intra-doc links to imported items do not resolve. Use a plain code span or an explicit path instead.
 
 For uncertain library behavior, write an **empirical probe** and capture the result in a comment rather than guessing; the comment is exactly the kind of "why" worth keeping.

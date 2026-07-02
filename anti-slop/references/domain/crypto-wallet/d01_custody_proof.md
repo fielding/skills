@@ -5,7 +5,7 @@ First read prompts/shared_rules.md and prompts/findings_schema.md. Read .antislo
 MOST IMPORTANT wallet topic. Answer from code evidence, not claims.
 
 Primary question: Can any server, admin, cloud function, bot, remote config, API route, or
-third-party service move user funds or recover private keys — WITHOUT the user's explicit
+third-party service move user funds or recover private keys -- WITHOUT the user's explicit
 signing action on the client?
 
 Search comprehensively:
@@ -22,14 +22,14 @@ For every function touching seed/key material, trace:
 and is the decryption key ever also sent?
 
 Check:
-- Backend/cloud functions — can any be called with a userId to return signing material or move funds?
-- API routes — do any accept or return decrypted wallet material?
-- mobile/ — OS-protected keychain (Keychain/Keystore/SecureStore) or plain storage?
-- extension/ — `chrome.storage.local` (not `sync`) for key material?
+- Backend/cloud functions -- can any be called with a userId to return signing material or move funds?
+- API routes -- do any accept or return decrypted wallet material?
+- mobile/ -- OS-protected keychain (Keychain/Keystore/SecureStore) or plain storage?
+- extension/ -- `chrome.storage.local` (not `sync`) for key material?
 - Any "recovery" or "support" path that reconstructs keys server-side?
 
 Final statement (required):
-- Non-custodial claim: CONFIRMED / NOT CONFIRMED / FALSE — with evidence.
+- Non-custodial claim: CONFIRMED / NOT CONFIRMED / FALSE -- with evidence.
 
 Hard BLOCKERS:
 - Seed/private key sent to backend, written to any DB, or present in any log.

@@ -15,7 +15,7 @@ Check:
 1. Is Telegram `initData` validated SERVER-SIDE via HMAC-SHA256 with the bot token (hash field
    removed before computing)? Or is the client-supplied user identity simply trusted?
 2. Replay protection: is `auth_date` checked and stale initData (>5 min) rejected?
-3. Bot token stored server-side only — never shipped to the client?
+3. Bot token stored server-side only -- never shipped to the client?
 4. Are wallet actions gated on validated initData, or on any Telegram session?
 5. Sensitive values passed in `start_param` / Mini App URL?
 6. Does the app also run outside Telegram? Is that path secured too?

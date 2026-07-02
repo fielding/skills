@@ -12,20 +12,20 @@ Gather the claims:
   rg -n "TODO|FIXME|coming soon|not yet|planned|roadmap" README.md docs/ 2>/dev/null
 
 For each significant claim in the README / docs / landing copy, classify it:
-1. **Verified** — there is code that plainly implements it (cite file:line).
-2. **Stub** — there's a function/route/page named for it, but it's empty, returns a
+1. **Verified** -- there is code that plainly implements it (cite file:line).
+2. **Stub** -- there's a function/route/page named for it, but it's empty, returns a
    placeholder, throws "not implemented", or is never wired up.
-3. **Absent** — no code implements it at all.
-4. **Contradicted** — code does the opposite of, or materially differs from, the claim.
+3. **Absent** -- no code implements it at all.
+4. **Contradicted** -- code does the opposite of, or materially differs from, the claim.
 
 Check specifically:
-- "Features" / bullet lists — does each one map to real, reachable code?
-- Setup/usage instructions — do the referenced commands, scripts, env vars, files exist?
-- Code comments and docstrings — do they describe what the function actually does, or an
+- "Features" / bullet lists -- does each one map to real, reachable code?
+- Setup/usage instructions -- do the referenced commands, scripts, env vars, files exist?
+- Code comments and docstrings -- do they describe what the function actually does, or an
   intended version? (`// validates and persists the user` over a function that only logs.)
-- Architecture/diagram docs — do the named modules/services exist?
-- Badges (build passing, coverage %, "production ready") — are they real or decorative?
-- Screenshots/demos of features — backed by code?
+- Architecture/diagram docs -- do the named modules/services exist?
+- Badges (build passing, coverage %, "production ready") -- are they real or decorative?
+- Screenshots/demos of features -- backed by code?
 
 Hard BLOCKER:
 - A core advertised feature is a stub or absent (the product's main promise isn't real).

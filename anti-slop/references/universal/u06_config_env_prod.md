@@ -12,16 +12,16 @@ Scan:
   rg -n "NODE_ENV|APP_ENV|ENVIRONMENT|debug *= *[Tt]rue|DEBUG *= *1" --glob '!node_modules'
 
 Checks:
-1. **Hardcoded environment values** — localhost URLs, ports, absolute `/Users/...` or
+1. **Hardcoded environment values** -- localhost URLs, ports, absolute `/Users/...` or
    `/home/...` paths, dev API endpoints baked into source instead of config.
-2. **Env separation** — is there any dev/staging/prod distinction, or one hardcoded mode?
-3. **`.env.example` completeness** — does it list the vars the code actually reads? Missing
+2. **Env separation** -- is there any dev/staging/prod distinction, or one hardcoded mode?
+3. **`.env.example` completeness** -- does it list the vars the code actually reads? Missing
    vars mean a fresh clone can't run. Extra/never-read vars are cruft.
-4. **Secrets via config** — are credentials read from env (good) or inlined (bad — overlaps u04)?
-5. **Debug left on** — debug flags, verbose logging, source maps, stack traces exposed, dev
+4. **Secrets via config** -- are credentials read from env (good) or inlined (bad -- overlaps u04)?
+5. **Debug left on** -- debug flags, verbose logging, source maps, stack traces exposed, dev
    error pages in a "production" build.
-6. **Sensitive data in logs** — tokens, passwords, PII, full request bodies logged at info.
-7. **No build/start story** — is there a documented, working way to build and run for real?
+6. **Sensitive data in logs** -- tokens, passwords, PII, full request bodies logged at info.
+7. **No build/start story** -- is there a documented, working way to build and run for real?
 8. **CORS `*` / auth disabled / open binds** flagged as TODO-for-prod but shipped as-is.
 
 Hard BLOCKER:

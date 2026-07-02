@@ -2,7 +2,7 @@
 
 When teaching a new language, framework, or paradigm, anchor it to what the learner already knows. For each
 axis, walk the four beats: **closest familiar equivalent → how it's similar → how it differs → where the
-analogy breaks down.** Always name the break-down point explicitly — an unqualified analogy becomes a
+analogy breaks down.** Always name the break-down point explicitly -- an unqualified analogy becomes a
 future bug in the learner's mental model.
 
 Draw on whichever axes are relevant; don't grind through all of them.
@@ -24,15 +24,15 @@ Draw on whichever axes are relevant; don't grind through all of them.
 
 ## Common traps to flag by origin
 
-- **From a GC language → ownership (Rust):** "the borrow checker is just a linter" — no, it changes how you
+- **From a GC language → ownership (Rust):** "the borrow checker is just a linter" -- no, it changes how you
   *structure* data, not just how you annotate it. Don't reach for `clone()`/`Rc` to silence it reflexively.
-- **From exceptions → result types:** treating `?`/`unwrap` as "the same as throwing" — the control flow is
+- **From exceptions → result types:** treating `?`/`unwrap` as "the same as throwing" -- the control flow is
   explicit and local, not a stack-unwinding teleport.
-- **From threads → async:** assuming `await` yields the CPU like a thread switch — it yields *cooperatively*;
+- **From threads → async:** assuming `await` yields the CPU like a thread switch -- it yields *cooperatively*;
   a blocking call inside an async fn stalls the whole executor.
 - **From dynamic → static typing:** expecting runtime duck typing; the compiler wants the shape up front.
 - **From classes → traits/interfaces:** modeling "is-a" hierarchies when the idiom is "can-do" capabilities.
 
 Show side-by-side snippets in the familiar language and the new one when the difference is mechanical. The
-goal is a correct mental model, not a syntax cheat-sheet — be explicit about what should *not* be
+goal is a correct mental model, not a syntax cheat-sheet -- be explicit about what should *not* be
 translated literally.

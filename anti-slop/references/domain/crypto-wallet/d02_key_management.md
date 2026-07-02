@@ -13,15 +13,15 @@ Search:
   rg -n "@scure/bip32|@scure/bip39|@noble|ethers|bitcoinjs|tweetnacl" --type ts
 
 Verify:
-1. Key generation uses a CSPRNG (crypto.getRandomValues / randomBytes / trusted lib) — NOT Math.random.
-2. Encryption is authenticated (AES-GCM, XChaCha20-Poly1305) — NOT AES-CBC alone.
-3. KDF is Argon2id / scrypt / PBKDF2 ≥100k iterations — NOT password used directly as key.
+1. Key generation uses a CSPRNG (crypto.getRandomValues / randomBytes / trusted lib) -- NOT Math.random.
+2. Encryption is authenticated (AES-GCM, XChaCha20-Poly1305) -- NOT AES-CBC alone.
+3. KDF is Argon2id / scrypt / PBKDF2 ≥100k iterations -- NOT password used directly as key.
 4. Salt random per-wallet (not static); IV/nonce random per-encryption (not reused).
 5. PIN is run through a KDF, not used directly as an AES key.
 6. No hand-rolled/custom cryptography.
 7. Failed-decrypt paths don't leak partial plaintext.
 8. Seed not held in app state / clipboard longer than needed; clipboard cleared after display.
-9. Mobile uses Keychain/Keystore/SecureStore; extension uses chrome.storage.local — never
+9. Mobile uses Keychain/Keystore/SecureStore; extension uses chrome.storage.local -- never
    plaintext AsyncStorage / sync storage for key material.
 
 Hard BLOCKERS:

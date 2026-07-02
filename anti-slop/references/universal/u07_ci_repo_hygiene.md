@@ -15,20 +15,20 @@ Inspect:
   ls -la | rg "node_modules|dist|build|\.env|\.DS_Store"   # tracked junk?
 
 Checks:
-1. **Real CI?** — is there a pipeline, and does it actually do something (install + build +
+1. **Real CI?** -- is there a pipeline, and does it actually do something (install + build +
    test + lint), or is it a hello-world / `echo passing` placeholder? Does it run on PRs?
-2. **CI honesty** — does the "build passing" badge correspond to a job that truly builds and
+2. **CI honesty** -- does the "build passing" badge correspond to a job that truly builds and
    tests, or to a no-op? Does CI `continue-on-error` past failures?
-3. **Commit history shape** — one giant "Initial commit" with the whole app is a strong
+3. **Commit history shape** -- one giant "Initial commit" with the whole app is a strong
    vibe-dump tell. Look for organic, incremental history vs. a single paste.
-4. **Authors / co-author tells** — generated-by markers, single author, no review trail.
-5. **.gitignore sanity** — present and covering deps/build/env? Or is `node_modules`/`dist`/
+4. **Authors / co-author tells** -- generated-by markers, single author, no review trail.
+5. **.gitignore sanity** -- present and covering deps/build/env? Or is `node_modules`/`dist`/
    `.env` committed?
-6. **Tracked junk** — build artifacts, `.DS_Store`, editor files, large binaries in the tree.
-7. **Branch/PR discipline** — any sign of review (PRs, tags, releases) vs. direct-to-main dump.
+6. **Tracked junk** -- build artifacts, `.DS_Store`, editor files, large binaries in the tree.
+7. **Branch/PR discipline** -- any sign of review (PRs, tags, releases) vs. direct-to-main dump.
 
 This topic rarely produces BLOCKERs on its own, but a no-op CI advertised as real coverage is
-a confident-lie — flag it HIGH and feed the headline to the verdict.
+a confident-lie -- flag it HIGH and feed the headline to the verdict.
 
 Headline: real CI yes/no, # commits, single-dump yes/no, tracked junk yes/no.
 

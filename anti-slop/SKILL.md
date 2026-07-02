@@ -2,10 +2,10 @@
 name: anti-slop
 version: "1.0.0"
 description: >
-  Fast first-pass reality check for any codebase — especially vibe-coded / LLM-generated
+  Fast first-pass reality check for any codebase -- especially vibe-coded / LLM-generated
   projects friends hand you to "look over." Answers the only question that matters up front:
   is this real software, or a confident-looking mirage? Produces a one-page VERDICT with a
-  0-100 Substance Score, top red flags, a go/no-go call, and an ordered fix roadmap — backed
+  0-100 Substance Score, top red flags, a go/no-go call, and an ordered fix roadmap -- backed
   by per-topic evidence on disk. Three layers over one engine: (1) universal slop checks that
   apply to any language, (2) a language pack (TypeScript/JS and Python implemented; Go/Rust
   stubbed) that runs the real toolchain, (3) optional domain packs (crypto-wallet bundled).
@@ -17,7 +17,7 @@ description: >
 
 # Anti-Slop: First-Pass Reality Check
 
-You are the orchestrator. You coordinate subagents — you do not review code yourself. Each
+You are the orchestrator. You coordinate subagents -- you do not review code yourself. Each
 subagent has its own isolated context, reads one prompt file, does the analysis, and writes
 findings to disk. Your job is setup, scheduling, and synthesis.
 
@@ -31,15 +31,15 @@ in the target repo during setup. Findings are written to `.antislop/findings/`.
 ## Arguments
 
 Parse from the user's invocation:
-- `--quick` — universal layer only (skip the language pack). Fastest triage.
-- `--deep` — after the verdict, also run the matched domain pack (default: recommend, don't run).
-- `--domain <name>` — force a specific domain pack (e.g. `crypto-wallet`).
-- `--lang <name>` — force a language pack instead of auto-detecting.
-- `--topic <id>` — run only one topic (e.g. `u03_stubs_dead_code`).
-- `--setup` — initialize dirs and copy prompts only; spawn nothing.
-- `--no-score` — skip the numeric Substance Score (still produce the verdict).
-- `--resume` — skip topics whose findings files already exist.
-- `--dry-run` — print the plan only; write nothing; spawn nothing.
+- `--quick` -- universal layer only (skip the language pack). Fastest triage.
+- `--deep` -- after the verdict, also run the matched domain pack (default: recommend, don't run).
+- `--domain <name>` -- force a specific domain pack (e.g. `crypto-wallet`).
+- `--lang <name>` -- force a language pack instead of auto-detecting.
+- `--topic <id>` -- run only one topic (e.g. `u03_stubs_dead_code`).
+- `--setup` -- initialize dirs and copy prompts only; spawn nothing.
+- `--no-score` -- skip the numeric Substance Score (still produce the verdict).
+- `--resume` -- skip topics whose findings files already exist.
+- `--dry-run` -- print the plan only; write nothing; spawn nothing.
 
 ## Step 1: Setup
 
@@ -47,7 +47,7 @@ Parse from the user's invocation:
 REPO=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 
 # Locate this skill's references/. NOTE: some environments wrap `find` with `bfs`,
-# whose `-path` glob does not match — so check canonical locations directly, then fall
+# whose `-path` glob does not match -- so check canonical locations directly, then fall
 # back to a `-name` search (which traverses reliably) filtered to anti-slop.
 SKILL_DIR=""
 for base in "$HOME/.claude/skills" "$REPO/.claude/skills"; do
@@ -77,12 +77,12 @@ Every subagent gets this wrapper (fill in `<id>` and `<REPO>`):
 > first. Use absolute paths under `<REPO>`. Do NOT modify source, commit, install, or deploy.
 > Write your findings to `<REPO>/.antislop/findings/<id>.md` using the Write tool before finishing.
 
-## Step 2: Wave 0 — Inventory & Stack Detection (sequential)
+## Step 2: Wave 0 -- Inventory & Stack Detection (sequential)
 
 Run `u01_inventory_stack` first and wait. It maps the repo and writes
 `.antislop/evidence/stack.md` declaring: detected language(s), package manager(s), frameworks,
 app surfaces, and a **domain guess** (e.g. `crypto-wallet`, `web-api`, `cli`, `unknown`).
-Read that file — every later decision keys off it.
+Read that file -- every later decision keys off it.
 
 ## Step 3: Pick & copy the language pack
 
@@ -103,23 +103,23 @@ done
 
 Skip this step entirely if `--quick`.
 
-## Step 4: Wave 1 — Universal slop checks (parallel)
+## Step 4: Wave 1 -- Universal slop checks (parallel)
 
 Spawn all eight in parallel:
 `u02_docs_vs_reality`, `u03_stubs_dead_code`, `u04_secret_hygiene`, `u05_dependency_sanity`,
 `u06_config_env_prod`, `u07_ci_repo_hygiene`, `u08_architectural_coherence`, `u09_error_handling`
 
-## Step 5: Wave 2 — Language pack (parallel, skipped on `--quick`)
+## Step 5: Wave 2 -- Language pack (parallel, skipped on `--quick`)
 
 Spawn the three topics of each matched pack (e.g. TS: `ts01_build_types_lint`,
 `ts02_test_reality`, `ts03_runtime_safety`; Python: `py01_build_types_lint`,
 `py02_test_reality`, `py03_runtime_safety`). These run the real toolchain (tsc/eslint/jest,
 mypy/ruff/pytest) and are the ground truth for "does it actually work."
 
-## Step 6: Wave 2.5 — Severity Normalization (sequential, single agent)
+## Step 6: Wave 2.5 -- Severity Normalization (sequential, single agent)
 
 After all topic findings exist and before synthesis, run **one** `severity_normalize` agent.
-Per-topic agents grade BLOCKER/HIGH/MEDIUM in isolation, so their calls drift — and that drift
+Per-topic agents grade BLOCKER/HIGH/MEDIUM in isolation, so their calls drift -- and that drift
 is what moves a repo across the Go/No-Go line. This pass re-grades every consequential finding
 against one bar (`references/_engine/severity_rubric.md`, copied to prompts/) with full
 cross-topic visibility, applying the reachability test (untrusted-reachable RCE/auth-bypass/
@@ -129,12 +129,12 @@ fund-movement = BLOCKER; trusted-local-operator-only = capped at MEDIUM). It wri
 Skip only if `--no-score` AND the user explicitly wants raw grades. For scale, you may run a
 3-agent panel and take the majority grade per finding instead of one normalizer.
 
-## Step 7: Wave 3 — Synthesis → VERDICT.md (sequential)
+## Step 7: Wave 3 -- Synthesis → VERDICT.md (sequential)
 
 Read every file in `.antislop/findings/` AND `.antislop/evidence/severity_normalized.md`,
 then write `.antislop/VERDICT.md` following `references/_engine/verdict_template.md` exactly.
 Compute the Substance Score per the rubric there (unless `--no-score`). **Use the normalized
-severities — not the raw per-topic grades — for the blocker count, Go/No-Go, and red-flag
+severities -- not the raw per-topic grades -- for the blocker count, Go/No-Go, and red-flag
 ranking.** The verdict leads; evidence is indexed, not pasted.
 
 ## Step 8: Domain handoff
@@ -148,7 +148,7 @@ From `stack.md`'s domain guess, consult `references/domain/_registry.md`:
 ## Step 9: Completion report
 
 ```
-ANTI-SLOP — <repo name> @ <sha>
+ANTI-SLOP -- <repo name> @ <sha>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SUBSTANCE SCORE   <n>/100   →  <Real | Mostly-real | Mirage | Abandon>
 RED FLAGS         <n>       BLOCKERS  <n>
@@ -162,11 +162,11 @@ Print the one-paragraph verdict inline so the user gets the answer without openi
 
 - Default model: Sonnet for universal/language waves; Opus for synthesis. Override as needed.
 - Tell the user which agents are about to run before each wave; one-line PASS/FAIL after.
-- If `u01` fails, stop — every later topic depends on the stack map.
+- If `u01` fails, stop -- every later topic depends on the stack map.
 - `--resume`: skip topics whose `.antislop/findings/<id>.md` already exists; mark "RESUMED".
 - Never fabricate a finding to fill a topic. INCONCLUSIVE is an honest verdict.
 - Three layers, one engine: universal (`references/universal/`) is language- and
   domain-agnostic; language packs (`references/lang/<lang>/`) own the toolchain; domain packs
   (`references/domain/<name>/`) own domain risk. All share `_engine/` rules + schema + verdict
-  format. To add a language or domain, drop a new folder in — the orchestrator picks it up.
+  format. To add a language or domain, drop a new folder in -- the orchestrator picks it up.
 ```

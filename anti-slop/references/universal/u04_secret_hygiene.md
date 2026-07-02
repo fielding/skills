@@ -2,7 +2,7 @@ First read prompts/shared_rules.md and prompts/findings_schema.md. Read .antislo
 
 # Topic: Secret & Credential Hygiene
 
-Goal: Find committed secrets in current files and git history. NEVER print a full secret —
+Goal: Find committed secrets in current files and git history. NEVER print a full secret --
 redact to first-4 + last-4 chars. This is both a slop tell (vibe-coded apps routinely commit
 .env) and a hard safety gate.
 

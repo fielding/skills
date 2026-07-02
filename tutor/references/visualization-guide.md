@@ -1,4 +1,4 @@
-# Visualization guide — concept → format
+# Visualization guide -- concept → format
 
 Pick the format that matches the *shape* of the idea. A visual earns its place only if it lowers cognitive
 load; if prose is clearer, use prose. Prefer Mermaid; fall back to ASCII or tables when Mermaid won't
@@ -51,7 +51,7 @@ stateDiagram-v2
   shipped --> [*]
 ```
 
-**Trace table (step-by-step execution) — great for "predict the value":**
+**Trace table (step-by-step execution) -- great for "predict the value":**
 
 | step | line | i | sum | note |
 |---|---|---|---|---|
@@ -66,5 +66,5 @@ stateDiagram-v2
 | reads | hit DB every call | cached 60s |
 | failure mode | DB overload under spike | stale-but-up |
 
-Use trace tables and "predict the next row" aggressively — prediction before reveal is where the learning
+Use trace tables and "predict the next row" aggressively -- prediction before reveal is where the learning
 actually happens.

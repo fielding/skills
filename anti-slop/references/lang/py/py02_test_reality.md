@@ -1,6 +1,6 @@
 First read prompts/shared_rules.md and prompts/findings_schema.md. Read .antislop/evidence/stack.md.
 
-# Topic: Python — Test Reality (real tests or theater?)
+# Topic: Python -- Test Reality (real tests or theater?)
 
 Goal: Determine whether the tests verify the software's actual behavior, or just exist to look
 tested. Theater tests are a top vibe-code tell.
@@ -19,13 +19,13 @@ Assess each test file, not the count:
 2. **Is everything mocked?** A test that mocks the function under test, or patches so much that
    only the mock is exercised, verifies nothing. Watch for `MagicMock` standing in for the
    actual logic and assertions only on `.called`.
-3. **Skipped / xfail** — suites silently disabled with `@pytest.mark.skip`/`xfail`, or
+3. **Skipped / xfail** -- suites silently disabled with `@pytest.mark.skip`/`xfail`, or
    conditionally skipped so they never run in practice.
-4. **Core-risk coverage** — does ANY real test exercise the project's actual critical logic
+4. **Core-risk coverage** -- does ANY real test exercise the project's actual critical logic
    (the things u02 said are the product's promise)? Map tests → core modules.
 5. **Do they pass?** If runnable cheaply and safely, run and report pass/fail. Tests that don't
    even collect/run are a false signal worse than none.
-6. **Fixtures** — realistic data, or all empty dicts / `"foo"` that never hit edges?
+6. **Fixtures** -- realistic data, or all empty dicts / `"foo"` that never hit edges?
 
 Hard BLOCKER:
 - Zero real tests on the core/critical logic.

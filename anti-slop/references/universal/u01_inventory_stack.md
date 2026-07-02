@@ -1,24 +1,24 @@
 First read prompts/shared_rules.md and prompts/findings_schema.md.
 
-# Topic: Inventory & Stack Detection (run first — context for everything else)
+# Topic: Inventory & Stack Detection (run first -- context for everything else)
 
 Goal: Map the repo and detect the stack so every later topic starts with accurate context.
-Do not make quality judgments yet — only map. This topic is NOT scored.
+Do not make quality judgments yet -- only map. This topic is NOT scored.
 
 Detect, from files actually present (not the README's claims):
-1. **Languages** — by file extension counts and manifest files: package.json (ts/js),
+1. **Languages** -- by file extension counts and manifest files: package.json (ts/js),
    pyproject.toml/requirements.txt (py), go.mod (go), Cargo.toml (rust), etc.
-2. **Package manager(s)** — lockfile present? npm/pnpm/yarn/bun, pip/poetry/uv, cargo. Note
+2. **Package manager(s)** -- lockfile present? npm/pnpm/yarn/bun, pip/poetry/uv, cargo. Note
    if NO lockfile exists.
-3. **Frameworks & runtime** — Next/React/Vue/Express/FastAPI/Django/Axum/etc.
-4. **App surfaces** — web app, API/server, CLI, mobile, browser extension, library,
+3. **Frameworks & runtime** -- Next/React/Vue/Express/FastAPI/Django/Axum/etc.
+4. **App surfaces** -- web app, API/server, CLI, mobile, browser extension, library,
    serverless functions, smart contracts.
-5. **Domain guess** — what kind of product is this? crypto-wallet, web-api, saas, cli-tool,
+5. **Domain guess** -- what kind of product is this? crypto-wallet, web-api, saas, cli-tool,
    ml-app, game, content-site, library, unknown. Base it on dependencies + directory names +
    entrypoints, not marketing copy.
-6. **Entrypoints** — main/index files, bin scripts, server boot, build/start scripts.
-7. **Manifest scripts** — flag any preinstall/postinstall/prepare/deploy/`rm -rf`/curl/wget.
-8. **Rough size** — file count, LOC ballpark (excluding deps/lockfiles/generated).
+6. **Entrypoints** -- main/index files, bin scripts, server boot, build/start scripts.
+7. **Manifest scripts** -- flag any preinstall/postinstall/prepare/deploy/`rm -rf`/curl/wget.
+8. **Rough size** -- file count, LOC ballpark (excluding deps/lockfiles/generated).
 
 Commands (adapt to what exists):
   ls -la; git log --oneline | head -20; git log --oneline | wc -l
@@ -29,7 +29,7 @@ Commands (adapt to what exists):
 Write `.antislop/evidence/stack.md` with a clear declaration block the other agents read:
 ```
 languages: <list>
-package_managers: <list, or "NONE — no lockfile">
+package_managers: <list, or "NONE -- no lockfile">
 frameworks: <list>
 surfaces: <list>
 domain_guess: <one of the labels above>

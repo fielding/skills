@@ -1,6 +1,6 @@
 First read prompts/shared_rules.md and prompts/findings_schema.md. Read .antislop/evidence/stack.md.
 
-# Topic: TS — Test Reality (real tests or theater?)
+# Topic: TS -- Test Reality (real tests or theater?)
 
 Goal: Determine whether the tests actually verify the software's core behavior, or just exist
 to make a coverage badge green. Theater tests are a top vibe-code tell: present, plentiful,
@@ -19,14 +19,14 @@ Assess each test file, not the count:
    render-without-assert, `expect(fn).toBeDefined()`.
 2. **Is everything mocked?** If the unit under test is fully mocked away, the test verifies the
    mock, not the code. Look for tests that mock the very function they claim to test.
-3. **Skipped / todo / only** — suites silently disabled (`.skip`, `xit`, `it.todo`) or pinned
+3. **Skipped / todo / only** -- suites silently disabled (`.skip`, `xit`, `it.todo`) or pinned
    to one test (`.only`) that hides the rest.
-4. **Core-risk coverage** — does ANY real test exist for the project's actual critical logic
+4. **Core-risk coverage** -- does ANY real test exist for the project's actual critical logic
    (the things u02 said are the product's promise)? Map tests → core modules. Coverage % is
    irrelevant if it covers getters and config.
 5. **Do they pass?** If you can run them cheaply and safely, do; report pass/fail. Tests that
    don't even run are worse than none (false signal).
-6. **Fixtures** — real-ish data, or all `foo`/`bar`/empty objects that never exercise edges?
+6. **Fixtures** -- real-ish data, or all `foo`/`bar`/empty objects that never exercise edges?
 
 Hard BLOCKER:
 - Zero real tests on the core/critical logic.
