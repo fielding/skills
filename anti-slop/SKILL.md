@@ -169,4 +169,3 @@ Print the one-paragraph verdict inline so the user gets the answer without openi
   domain-agnostic; language packs (`references/lang/<lang>/`) own the toolchain; domain packs
   (`references/domain/<name>/`) own domain risk. All share `_engine/` rules + schema + verdict
   format. To add a language or domain, drop a new folder in -- the orchestrator picks it up.
-```
