@@ -100,6 +100,15 @@ Keep a candidate only if **all** hold; else drop it.
   source rather than duplicating.
 - **Non-obvious** -- would not be guessed from reading the code or existing docs.
   Terse is the house style; do not pad a skill or a KB with a weak finding.
+- **Sourced (conventions only)** -- a candidate that states a *convention* (a
+  conventions-pack gap in the skill half, a house convention in the domain half) must
+  trace to **direct feedback from a named human reviewer**: a PR comment, a review
+  ruling, an in-session correction. Your own inference from reading the code is not a
+  convention source -- patterns you merely observed get downgraded, not written as
+  conventions. If the operator config names `trusted_reviewers` (`[retro]` section),
+  feedback from them clears this bar outright; feedback from anyone else still counts
+  but warrants a proposal rather than an in-place pack edit. Downgrade target: proposal
+  (skill half) or project note only (domain half).
 
 Verify each survivor against its source before writing (read the file, re-run the
 probe). A retro that adds a wrong "convention" is worse than one that adds nothing.
@@ -120,7 +129,10 @@ by one rule, not a hardcoded list: **is the skill's source under your `skills_ro
   **high-confidence and clearly general**, edit the skill source in place, commit in
   the repo's `atomic-changes` form, and push to `skills_repo` so it propagates.
   Otherwise -- lower confidence, or plausibly a one-project quirk -- file a proposal
-  instead (see below) rather than editing.
+  instead (see below) rather than editing. For a **conventions pack**, high-confidence
+  additionally requires the Phase 2 source bar: a pack states rules reviewers actually
+  enforce, so an entry without direct feedback from a `trusted_reviewers` reviewer is a
+  proposal, not an edit.
 - **A skill you do not own** (source anywhere else, another author's repo): **never
   edit it.** File a proposal only; it is upstream and theirs to change.
 - **A self-tracking skill** (one that delta-tracks its own findings, e.g. review-crew):
@@ -141,7 +153,10 @@ to act on later. The report is always a valid destination.
   that KB at its `path`, in the KB's own entry format (**Rule** / **Why** /
   **Example** / **Source** / **Seen: Nx**), in the matching section. `peer_reviewed =
   true` raises the value of these learnings (reviewed by peers) -- include readily;
-  for an unreviewed source, hold a higher novelty/durability bar. Bump `Seen`
+  for an unreviewed source, hold a higher novelty/durability bar. A **house
+  convention** additionally needs the Phase 2 source bar to enter the KB: named
+  reviewer in **Source**, strongest when from `trusted_reviewers`. An observed-only
+  pattern stays in the project note until a reviewer ratifies it. Bump `Seen`
   counters on recurrence; flag genuine reversals (`Settled:` / `⚠ Tension:`) rather
   than overwriting.
 - **Never** write to a KB the slug did not match. No match means project-local only.

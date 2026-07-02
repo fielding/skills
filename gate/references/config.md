@@ -67,6 +67,7 @@ tooling). Optional; absence makes the skill half report-only.
 skills_root  = "~/src/my-skills"     # your authored-skills tree
 skills_repo  = "you/my-skills"       # where in-place skill edits get pushed
 proposal_cmd = "tix add \"{title}\" -p 3 -b \"{body}\""  # how proposals file (optional)
+trusted_reviewers = ["alice", "bob"] # reviewers whose direct feedback ratifies a convention (optional)
 ```
 
 - **Ownership is by path, not a list.** A skill whose source sits under `skills_root`
@@ -75,6 +76,12 @@ proposal_cmd = "tix add \"{title}\" -p 3 -b \"{body}\""  # how proposals file (o
 - **`proposal_cmd`** is the command retro runs to file a lower-confidence change
   (`{title}`/`{body}` substituted). Unset -> retro records the proposal in its run
   report instead.
+- **`trusted_reviewers`** gates *convention* entries (conventions-pack gaps, house
+  conventions). Direct feedback from a listed reviewer clears retro's source bar
+  outright: it can land as an in-place pack edit or a KB house convention. Feedback
+  from anyone else, or a pattern retro merely observed, is downgraded to a proposal
+  or the project note. Unset -> every convention takes the downgrade path (strictest
+  default: no convention lands without a human name behind it).
 - **All unset** -> retro still runs: it writes the domain note and reports proposed
   skill changes, editing nothing. That is the portable default.
 
