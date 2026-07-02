@@ -1,7 +1,7 @@
 ---
 name: handoff
 description: Document current project state for seamless agent handoff. Use when the user says "handoff", "document this", "prepare for handoff", "save context", "write it down", "update the project docs", "pretend the power went out", "prepare for another agent", or when a significant chunk of work is done and the user wants to preserve context. Also trigger when the user says "what were we doing" or "catch me up" to READ existing handoff docs.
-allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Skill
 ---
 
 # Handoff
