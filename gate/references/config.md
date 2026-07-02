@@ -110,7 +110,8 @@ Where the project's own conventions live, beyond the language pack.
 - **Look for:** the AGENTS.md conventions prose itself, plus any pointer it gives
   (a `code-review` references dir, a `CONVENTIONS.md`, nested AGENTS.md).
 - **Fallback:** the detected language's conventions pack alone (`rust-conventions`,
-  future ts/py). The repo's declared rules always override the pack.
+  `typescript-conventions`; a Python pack is planned). The repo's declared rules
+  always override the pack.
 
 ### Mutation tool + toggle (stage 4)
 Which mutation tool to run, and whether mutation runs at all.

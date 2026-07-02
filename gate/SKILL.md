@@ -98,8 +98,8 @@ stage 3 loads, the default **gate commands** for the floor, and the default
 
 - `Cargo.toml` / `*.rs` -> Rust -> `rust-conventions` pack, cargo floor,
   `cargo-mutants`.
-- `package.json` / `tsconfig.json` / `*.ts` -> TypeScript -> (ts pack, planned),
-  npm/pnpm floor, Stryker.
+- `package.json` / `tsconfig.json` / `*.ts` -> TypeScript -> `typescript-conventions`
+  pack, npm/pnpm floor, Stryker.
 - `pyproject.toml` / `*.py` -> Python -> (py pack, planned), pytest/ruff floor,
   mutmut.
 
@@ -327,9 +327,9 @@ stage that calls it will run.
 **3. Conditional skills** -- check only when relevant; **warn, do not abort**:
 
 - **Conventions pack** -- only the detected language's pack is required. Rust ->
-  `rust-conventions` (hard-required). TypeScript/Python -> the pack is *planned*;
-  if absent, warn that stage 3's language layer is skipped (SSM + repo AGENTS.md
-  still apply) and continue.
+  `rust-conventions`, TypeScript -> `typescript-conventions` (both hard-required).
+  Python -> the pack is *planned*; if absent, warn that stage 3's language layer
+  is skipped (SSM + repo AGENTS.md still apply) and continue.
 - **`code-review`** -- only if the repo's AGENTS.md declares a label protocol
   (stage 11). This is the **repo's** code-review skill, checked in the repo, not
   the global store. No protocol -> stage 11 skipped -> not required.
@@ -365,10 +365,13 @@ from the lockfile:
 ```bash
 store="${SKILLS_DIR:-$HOME/.agents/skills}"
 lock="$HOME/.agents/.skill-lock.json"
-# always-on companions + the detected language's pack (rust-conventions for Rust).
+# always-on companions + the detected language's pack: rust-conventions for Rust,
+# typescript-conventions for TypeScript (the Python pack is planned -- for Python,
+# drop the pack and warn). Set `pack` to match the detected language.
 # set -- + for s in "$@" word-splits correctly in BOTH bash and zsh (an unquoted
 # $var does NOT split under zsh -- do not regress to `for s in $required`).
-set -- intent state-space-minimization scrub-ai-tells atomic-changes git-factor voice rust-conventions
+pack=rust-conventions   # or typescript-conventions, per the detected language
+set -- intent state-space-minimization scrub-ai-tells atomic-changes git-factor voice "$pack"
 missing=""; lines=""
 for s in "$@"; do
   if [ ! -e "$store/$s" ]; then
@@ -449,7 +452,8 @@ language- and project-free:
 
 1. **General principles** -- already carried by SSM (stage 2).
 2. **Language idiom** -- the conventions pack for the detected language:
-   **`rust-conventions`** for Rust; the TypeScript and Python packs are planned.
+   **`rust-conventions`** for Rust, **`typescript-conventions`** for TypeScript;
+   the Python pack is planned.
    The pack states the general principles in the language's idiom plus the
    language-specific mechanisms (e.g. for Rust: `.expect` over `.unwrap`,
    associated types over boxed jokers, the clippy restriction-lint gotchas).
