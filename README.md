@@ -57,6 +57,9 @@ When a skill needs human setup, those notes live in its own folder.
 - **tutor**: teach yourself (or be taught) a codebase, change, or concept *properly*:
   problem-first, incremental, verified at every step against a written Understanding
   Checklist. Not a one-shot explanation. A session that ends when you can explain it back.
+- **typescript-conventions**: a TypeScript idiom pack (the general principles in
+  TypeScript's idiom plus the language-specific mechanisms). Loaded by `gate`'s
+  conventions stage for TS repos; useful on its own.
 
 ## Configuration
 

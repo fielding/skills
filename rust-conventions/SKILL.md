@@ -18,7 +18,7 @@ allowed-tools: Read, Grep, Glob, Bash, Skill
 
 A baseline of Rust conventions distilled from high-bar reviews. Two layers:
 
-1. **General principles** (any language, but stated here in their Rust expression). Future TypeScript and Python packs will restate the same ideas in their own idiom.
+1. **General principles** (any language, but stated here in their Rust expression). The `typescript-conventions` pack restates the same ideas in TypeScript's idiom; a Python pack is planned.
 2. **Rust idioms** (the specific mechanism the language gives you).
 
 Defer to a project's own conventions where it has declared them; use these to fill the gaps.
