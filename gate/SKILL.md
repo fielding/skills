@@ -281,6 +281,11 @@ and review state; they drive the deltas.
 
   - **CLEAN** (no submitted reviews, no inline threads) -> factor into atomic commits and
     `git push --force-with-lease` as normal. Nothing to detach.
+  - **Bot-only activity** (every review and thread is from an auto-review bot that
+    re-reviews each push) -> treat as CLEAN with a ledger note. The protect-threads
+    rule exists for humans; a bot's thread detaching costs nothing when the bot
+    re-reviews the new head anyway. Incorporate the bot's findings before the split
+    so nothing is lost with the thread.
   - **ACTIVITY present** -> do **not** rewrite history. Append the gate's fixes as fixup
     commits on the existing branch and **defer the atomic split** (record a follow-up
     ticket; leave the existing commit structure intact). Preserving live review threads

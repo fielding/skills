@@ -109,3 +109,29 @@ stack but not the sibling. Rebase the whole stack onto the current trunk bottom-
 (cherry-pick each branch onto the rebased parent) so the chain is linear and every
 layer sees the sibling's merged code. Force-push each; the in-review PRs just
 update. Do this before building a new layer that needs all of it.
+
+## Factor sessions converge to the recorded target tree
+
+`git factor` records the combined commit's tree at session start and restores the
+unstaged pool *toward that tree* after every `--continue`. Two consequences, both
+learned the hard way:
+
+- **Mid-session content fixes are discarded.** Editing a file's "final" content
+  during the session (fixing a typo you spotted while isolating an atom) does not
+  survive: the next pool restore converges the file back to the recorded tree.
+  Make content fixes before starting the session, or after `--finish` via a
+  rebase edit -- never inside it.
+- **A rebase-edit amend can be silently undone by a later commit's replay.** If
+  the amended line sits inside a later commit's patch context, the replay's
+  three-way merge can resolve that region back to the later commit's original
+  blob. The tip looks wrong again and no conflict ever fired. Fix the line in
+  *every* commit whose blob carries it (edit-stop each one), and verify each
+  amend landed with `git show HEAD:<file> | grep`, not by trusting the worktree.
+
+## Named re-exports entangle removal atoms
+
+A wildcard barrel is order-inert, but a barrel that re-exports a symbol *by name*
+couples its removal to the symbol's: deleting the API first leaves the barrel
+referencing a missing export and that atom's gate fails. Remove barrels before the
+APIs they name. The per-commit gate catches this; plan for it instead of
+discovering it.
