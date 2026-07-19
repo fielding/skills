@@ -118,7 +118,8 @@ Which mutation tool to run, and whether mutation runs at all.
 - **Look for:** a declared mutation command, or a statement that mutation testing
   is/ isn't part of the gate.
 - **Fallback:** off unless config enables it (it is heavy). When on, the detected
-  language's default tool: `cargo-mutants` / Stryker / mutmut.
+  language's default tool: Stryker (JS/TS) / `cargo-mutants` (Rust) / mutmut
+  (Python), each run per the recipe in `references/mutation.md`.
 
 ### Hygiene toggle (stage 5)
 Whether the code-diff AI-tells sweep runs.

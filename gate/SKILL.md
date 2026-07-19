@@ -98,8 +98,8 @@ stage 3 loads, the default **gate commands** for the floor, and the default
 
 - `Cargo.toml` / `*.rs` -> Rust -> `rust-conventions` pack, cargo floor,
   `cargo-mutants`.
-- `package.json` / `tsconfig.json` / `*.ts` -> TypeScript -> `typescript-conventions`
-  pack, npm/pnpm floor, Stryker.
+- `package.json` / `tsconfig.json` / `*.ts` / `*.js` -> JavaScript/TypeScript ->
+  `typescript-conventions` pack, npm/pnpm floor, Stryker.
 - `pyproject.toml` / `*.py` -> Python -> (py pack, planned), pytest/ruff floor,
   mutmut.
 
@@ -293,7 +293,7 @@ and review state; they drive the deltas.
 
   Either branch: re-run stage 11 after the push, since any push stales the labels.
 - **Stage 10 open PR** -- do **not** `gh pr create`; the PR exists. If intent materially
-  diverged from the PR body, rewrite the body with **`voice`** + **`scrub-ai-tells`** and
+  diverged from the PR body, rewrite the body with **`my-voice`** + **`scrub-ai-tells`** and
   `gh pr edit <pr> --body-file <voiced>.md`; otherwise leave the body untouched. The
   presentation pass fires only when you are actually changing the body.
 - **Stage 11 labels** -- this is the *common* path here: the PR already carries labels and
@@ -327,7 +327,7 @@ stage that calls it will run.
 | conventions pack | stage 3 | the pack for the **detected language** (below) |
 | `scrub-ai-tells` | stages 5, 10 | always (stage 10 runs even if 5 is skipped) |
 | `atomic-changes`, `git-factor` | stage 9 | always |
-| `voice` | stage 10 | always |
+| `my-voice` | stage 10 | always |
 
 **3. Conditional skills** -- check only when relevant; **warn, do not abort**:
 
@@ -376,7 +376,7 @@ lock="$HOME/.agents/.skill-lock.json"
 # set -- + for s in "$@" word-splits correctly in BOTH bash and zsh (an unquoted
 # $var does NOT split under zsh -- do not regress to `for s in $required`).
 pack=rust-conventions   # or typescript-conventions, per the detected language
-set -- intent state-space-minimization scrub-ai-tells atomic-changes git-factor voice "$pack"
+set -- intent state-space-minimization scrub-ai-tells atomic-changes git-factor my-voice "$pack"
 missing=""; lines=""
 for s in "$@"; do
   if [ ! -e "$store/$s" ]; then
@@ -476,13 +476,12 @@ rules). Then apply the returned findings on the main thread as in stage 2.
 ### Stage 4: mutation testing ⚙
 
 Optional, config-toggle (heavy; off unless config or `--skip`'s inverse enables
-it). Run the language's mutation tool from config (`cargo-mutants` / Stryker /
-mutmut) against the changed files. Record caught / unviable / missed / timeout.
-Fix every survivor by adding a distinguishing test or simplifying the source. Two
-patterns recur: error-path invariants survive when every boundary mock is
-infallible (add a deliberately-failing impl to drive the `Err` branch); loop
-stop-conditions survive or hang under a `==` flip (drive the failing path AND
-wrap the loop in a timeout so a broken early-return trips the deadline). For thin
+it). Run the language's mutation tool from config -- Stryker for JS/TS,
+`cargo-mutants` for Rust, mutmut for Python -- against the changed files only,
+following the per-tool recipe in **`references/mutation.md`** (loaded only when
+this stage runs). Record caught / unviable / missed / timeout. Fix every survivor
+by adding a distinguishing test or simplifying the source; the recurring survivor
+patterns and each tool's verdict mapping live in the reference. For thin
 wrappers, near-zero viable mutants is the expected signal, not a gap. Mutation
 testing is "better than nothing," not proof of correctness.
 
@@ -646,7 +645,7 @@ fresh-PR path.
 Now turn `intent.md` into the user-facing PR body. **This is the presentation
 pass** -- the first time voice and scrub touch the intent:
 
-1. Invoke **`voice`** to rewrite `intent.md`'s What/Why into the PR body in the
+1. Invoke **`my-voice`** to rewrite `intent.md`'s What/Why into the PR body in the
    user's register.
 2. Invoke **`scrub-ai-tells`** on that body (em-dash sweep included).
 3. Create the PR:
@@ -747,3 +746,6 @@ and are documented above, not here.)
   the safe-layer slice into its own PR).
 - **`references/review-panel.md`** -- stage 7's built-in subagent review panel, the
   portable fallback when `review-crew` is not installed (loaded only on that path).
+- **`references/mutation.md`** -- stage 4's per-tool run recipes (Stryker /
+  cargo-mutants / mutmut): diff-scoping, verdict mapping, recurring survivor
+  patterns (loaded only when the mutation stage is enabled).
