@@ -85,7 +85,7 @@ this operator layer, is in
   **Coming soon** (the script isn't public yet). Until then, `gate` falls back to a
   built-in subagent review panel that captures the core value (multiple independent
   reviewers, with disagreement treated as signal) so the stage still runs.
-- a personal **voice** skill is also separate and not included here. `gate` degrades
+- a personal **my-voice** skill is also separate and not included here. `gate` degrades
   gracefully without these. Its preflight tells you what's missing rather than failing
   mid-run.
 

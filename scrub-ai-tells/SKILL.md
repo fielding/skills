@@ -60,6 +60,14 @@ Remove patterns from text that signal it was written by an LLM. The goal is text
 - Code blocks, command examples, and technical terms
 - Intentional formatting and structure
 
+### Code diffs (audit mode)
+
+When invoked on a code diff (e.g. as `gate`'s hygiene stage), the scope is the
+human-readable text *inside* the code: comments, docstrings, test names, and
+string literals shown to users. Report or fix tells there -- em dashes in
+comments, filler phrases in docstrings, over-explained test names. Never touch
+executable logic, identifiers that code depends on, or behavior.
+
 ## Workflow
 
 ### Step 1: Identify target files
@@ -88,7 +96,8 @@ Tell the user what was changed. Keep it brief:
 
 ## Rules
 
-- Never change code, commands, or technical content.
+- Never change executable code, commands, or technical content. (Comments,
+  docstrings, and test names are fair game in audit mode -- see above.)
 - Never alter meaning. If removing a word changes the meaning, rephrase instead.
 - Do not add new content. This skill only removes and rephrases.
 - When in doubt about whether something is an AI tell vs. the user's natural style, leave it.

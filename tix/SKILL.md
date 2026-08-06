@@ -3,9 +3,11 @@ name: tix
 description: >
   Command reference and workflow for the `tix` issue tracker. Stores live in
   per-repo `.tix/` directories. Use whenever you need the exact tix CLI syntax,
-  or when creating, listing, updating, searching, or modeling dependencies
-  between issues. Pair it with a "use tix in every repo" directive in your agent
-  instructions; this skill is the full reference behind it.
+  or when the user says "file an issue", "create a ticket", "track this",
+  "what's ready to work on", "what's next", or asks to list, update, close,
+  search, or model dependencies between issues in a repo with a `.tix/` store.
+  Pair it with a "use tix in every repo" directive in your agent instructions;
+  this skill is the full reference behind it.
 allowed-tools: Bash, Read
 ---
 
@@ -23,7 +25,7 @@ command reference and workflow conventions for it.
 
 ```
 tix init [--prefix name]                     # create .tix/ in current dir
-tix add "title" [-p 1-5] [-a who] [-t tag]   # create issue (1 = highest pri)
+tix add "title" [-b body] [-p 1-5] [-a who] [-t tag]   # create issue (1 = highest pri)
 tix list [--status open] [--assignee x]      # list issues
 tix ready [--assignee x]                      # unblocked issues only
 tix show <id>                                 # full details + comments
