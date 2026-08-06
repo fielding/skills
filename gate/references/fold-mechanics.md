@@ -51,6 +51,12 @@ the floor (lint + test) on it. Each PR's CI builds that branch's tip = one of
 these commits, so a non-bisectable middle commit is a red PR even when the stack
 tip is green. Then check the branch back out.
 
+Include any CI-armed diff-aware gates the local floor never runs (added-line
+lints computed from the PR diff and the like): run them per rewritten commit
+against that commit's own base. A mid-stack commit can fail such a gate while
+the tip passes it, and the mid-stack commit is what some PR's CI actually
+checks.
+
 ## Confirm the rebuilt tip is net-identical to the known-good one
 
 After conflict resolutions, `git diff <good-sha> HEAD --stat` must be empty -- so
@@ -100,6 +106,28 @@ git cherry-pick $old_child_tip
 ```
 
 Then re-run the pipeline from the floor.
+
+**Propagating a mid-stack amend through a deep stack.** With one branch per
+stacked PR on a long linear chain, a single rebase moves every descendant ref at
+once instead of N cherry-picks:
+
+```bash
+git rebase --onto <amended-commit> <old-commit> <topmost-branch> --update-refs
+```
+
+Three traps, each verified the hard way:
+
+- `--update-refs` never moves a branch that points *at* `<old-commit>` itself --
+  the upstream bound is exclusive. When the amended commit is also some branch's
+  head, repoint that branch by hand (`git branch -f`). Missing it silently breaks
+  the chain at that boundary and leaves the un-amended head to ship.
+- Re-verify linearity after *every* propagation, not once up front: each branch
+  head must be an ancestor of the next, and the total commit count must be
+  unchanged.
+- Push with exact leases read from the remote at push time (`git ls-remote`),
+  not from local `origin/*` refs. After several rewrites the remote-tracking
+  refs go stale and `--force-with-lease=<ref>:<stale-sha>` is rejected with
+  "stale info".
 
 **When a sibling merges into the trunk after your stack was cut.** If a cousin PR
 (a concrete impl your new layer depends on) merges into the trunk *after* your
