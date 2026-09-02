@@ -80,6 +80,11 @@ discovered during the work: `AGENTS.md` (the cross-tool standard), `CLAUDE.md`,
 are committed; the handoff docs are state *from* agents and are gitignored. Keep them
 distinct.
 
+These files are often symlinked to each other (commonly `CLAUDE.md -> AGENTS.md`).
+Writing through the symlink works, but git only sees the resolved target — `git add
+CLAUDE.md` stages nothing when the edit landed in `AGENTS.md`. `readlink` the file
+before committing and stage the real one.
+
 ## How to write handoff docs
 
 Write like you're leaving notes for a sharp coworker with zero context on today.
