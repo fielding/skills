@@ -104,6 +104,11 @@ The build / lint / test / format-check / doc commands for this repo.
   `cargo clippy`, `cargo test`, `cargo fmt --check`, `cargo doc`; TS:
   `npm run build/lint/test`; Python: `pytest` + `ruff`). Tell the user what was
   assumed.
+- **Always also read the CI workflows' job steps** (`.github/workflows/*.y*ml`),
+  not just the package scripts. CI often runs steps no script exposes -- a
+  diff-aware added-line lint, ESLint rule tests, script tests, an aggregate
+  `clean-build` -- and the floor is only equivalent to CI if it includes them. A
+  floor that stops at `yarn lint && yarn test` passes locally and fails the PR.
 
 ### Conventions source (stage 3)
 Where the project's own conventions live, beyond the language pack.
