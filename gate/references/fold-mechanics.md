@@ -137,3 +137,44 @@ stack but not the sibling. Rebase the whole stack onto the current trunk bottom-
 (cherry-pick each branch onto the rebased parent) so the chain is linear and every
 layer sees the sibling's merged code. Force-push each; the in-review PRs just
 update. Do this before building a new layer that needs all of it.
+
+## When fixups span the stack, split a wip instead of autosquashing
+
+A `fixup!` authored against the *full* stack carries context from later commits, so
+`rebase --autosquash` conflicts the moment it replays that fixup onto its target,
+and every conflict tempts the copy-the-final-file mistake above. When more than a
+couple of fixups touch files that several commits share, do not autosquash. Rebuild
+the whole change as one wip commit on the current base (`cherry-pick -n` the range,
+verify the tree is byte-identical to the known-good tip), then factor that single
+commit with `git factor`, driving each atom from a deterministic state generator
+that slices the *final* files into cumulative per-atom states (self-test: the last
+state must reproduce the final tree exactly). The split then happens once and every
+intermediate tree is derived, never hand-typed.
+
+## Factor-gate hygiene
+
+Traps that each cost a factor session:
+
+- A docs-only atom matches zero tests; `cargo nextest` errors on "no tests to run"
+  unless the gate passes `--no-tests=pass`.
+- Guards built on `git status --porcelain` see a new directory collapsed to
+  `dir/`, not the file inside it; use `--porcelain -uall`.
+- `git factor --exec` and driver scripts run in non-interactive shells that lack
+  version-manager shims (fnm's `yarn`, `node`); export the shim bin dir into PATH
+  explicitly, and check exit codes directly rather than through pipes.
+- `git cherry-pick` has no `-q`; and a conflicted `cherry-pick -n` leaves no
+  sequencer, so `--abort` has nothing to abort: recover with `git reset --hard`
+  to the last good commit.
+- Verify each commit in a *fresh* worktree, but give it the gitignored build
+  products the gates need (node_modules, a generated ORM client) or the failure
+  is the environment, not the commit.
+
+## Splitting a `#[cfg(test)]` module trips `dead_code`
+
+Fields that only a later atom reads (a corpus DTO whose request fields the replay
+driver consumes) warn as never read in the earlier atom, and `deny(warnings)` turns
+that into a red gate. Derived `Clone`/`Debug` do not count as reads; a proc-macro
+derive such as `Serialize` does, which is why removing a speculative derive can
+expose the gap. The fix is the honest one: the earlier atom's tests read every
+field it parses. If a field truly has no reader until the later atom, the field
+belongs to that atom.
