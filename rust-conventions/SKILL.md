@@ -259,5 +259,7 @@ Projects that turn on the clippy **restriction** group hit a recurring set of li
 - **`unused_trait_names`** -- when you import a trait only for its methods, write `use Trait as _;`.
 - **`missing_const_for_fn`** -- a trivial-body function (a stub constructor) must be `const fn`. But a `const fn` cannot move a generic field with a destructor out of `self`, so a `new` constructor can be `const` while an `into_parts` that destructures `self` cannot.
 - **Intra-doc-link gotcha** -- module-level `//!` intra-doc links to imported items do not resolve. Use a plain code span or an explicit path instead.
+- **`unseparated_literal_suffix` + `separated_literal_suffix`** -- the restriction group arms both, so `1usize` and `1_usize` are each rejected. Drop the suffix and let inference type the literal (`(1..).zip(lines)` where the counter flows into a `usize` field).
+- **Dormant modules: `#![expect(dead_code, reason = "...")]`, not `allow`** -- `expect` fails the build once the code gains a consumer and the suppression is no longer fulfilled, so a dormant reader cannot keep hiding an unread field after it goes live.
 
 For uncertain library behavior, write an **empirical probe** and capture the result in a comment rather than guessing; the comment is exactly the kind of "why" worth keeping.
