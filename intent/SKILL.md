@@ -73,6 +73,11 @@ Notes on the reader:
 - The current intent-capture session is itself the newest match -- skip it and
   use the session that actually contains the change discussion. `--list` makes
   this easy: read the timestamps/branches and choose the one for THIS change.
+- When `gate` runs in a disposable worktree (treehouse or `git worktree`), the
+  reader filters by *that* tree's cwd and finds only unrelated sessions. The
+  authoring session lives under the original checkout: run the reader there, or,
+  when the current conversation is the authoring session, write from it directly
+  and say so.
 - Already applies a light secret-redact pass on its output.
 
 Read the transcript and summarize + disambiguate it into What / Why / Scope /
