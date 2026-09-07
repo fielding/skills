@@ -261,5 +261,11 @@ Projects that turn on the clippy **restriction** group hit a recurring set of li
 - **Intra-doc-link gotcha** -- module-level `//!` intra-doc links to imported items do not resolve. Use a plain code span or an explicit path instead.
 - **`unseparated_literal_suffix` + `separated_literal_suffix`** -- the restriction group arms both, so `1usize` and `1_usize` are each rejected. Drop the suffix and let inference type the literal (`(1..).zip(lines)` where the counter flows into a `usize` field).
 - **Dormant modules: `#![expect(dead_code, reason = "...")]`, not `allow`** -- `expect` fails the build once the code gains a consumer and the suppression is no longer fulfilled, so a dormant reader cannot keep hiding an unread field after it goes live.
+- **`serde_json::json!` is unusable** -- its expansion calls `unwrap` (fires `disallowed_methods`) and carries unsuffixed literals (`default_numeric_fallback`). Build test JSON with `serde_json::from_str(r#"..."#)` and compare `to_value`/`to_string` output; route bare numeric expectations through a typed helper (`fn n(v: u64) -> Value`), since both literal-suffix spellings are banned.
+- **`unwrap_in_result`** -- no `.expect` inside a fn returning `Option`/`Result`, even on checked arithmetic that cannot fail; move the arithmetic into a plain helper that returns the value.
+- **`Arc<Concrete>` to `Arc<dyn Trait>`** -- `as` is banned and `Arc::clone(&x)` infers the dyn type from the annotation and fails to compile; write `Arc::<Concrete>::clone(&x)` into a typed `let`, or pass it straight to a parameter typed `Arc<dyn Trait>`.
+- **`pattern_type_mismatch` with `ref_patterns`** -- together they make `if let Variant(inner) = &mut self.field` unwritable; model that state as a plain struct with methods instead of an enum matched through a `&mut`.
+- **`non_ascii_literal`** -- string literals must be ASCII; write `\u{e9}` escapes in Rust strings and `\u00e9` inside embedded JSON.
+- **New modules land with a live caller** -- `deny(warnings)` makes unused private items `dead_code` errors in the lib build even when tests exercise them, so order atoms by first consumer rather than by file.
 
 For uncertain library behavior, write an **empirical probe** and capture the result in a comment rather than guessing; the comment is exactly the kind of "why" worth keeping.
