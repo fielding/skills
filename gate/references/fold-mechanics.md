@@ -177,4 +177,6 @@ that into a red gate. Derived `Clone`/`Debug` do not count as reads; a proc-macr
 derive such as `Serialize` does, which is why removing a speculative derive can
 expose the gap. The fix is the honest one: the earlier atom's tests read every
 field it parses. If a field truly has no reader until the later atom, the field
-belongs to that atom.
+belongs to that atom. The same rule orders a new module's atoms: land the type and
+its first consumer together (an event plus the handler that emits it), then the
+helpers whose only caller is the next atom (a parser plus the observer that feeds it).
