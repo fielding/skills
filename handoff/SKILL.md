@@ -18,6 +18,12 @@ writing anything:
 
 1. **`.handoff` already exists** (symlink or dir) -> use it as-is. This is the common
    path; no config read, no setup. Follow a symlink to its target.
+   - **Broken symlink** (target missing -- vaults get reorganized): find the live
+     docs first -- another checkout or worktree of the same repo usually has a
+     `.handoff` that resolves -- and repoint the broken link there. Only when no
+     live location exists anywhere fall back to rule 2. Never mkdir at the stale
+     target and never re-derive from config while live docs exist elsewhere:
+     both fork the docs.
 2. **`.handoff` does not exist** -> derive the project name, then create it:
    - **Project name:** `git remote get-url origin` -> the repo name (e.g.
      `git@github.com:owner/widget.git` -> `widget`). Fallback: the current
@@ -112,7 +118,12 @@ already carries. Rewrite to stay lean rather than letting a file accrete.
 1. Resolve the `.handoff` location (above); create it and the symlink if needed.
 2. Read the conversation, recent `git log`, `git diff`, and any existing handoff docs.
 3. Rewrite STATUS.md, DECISIONS.md, CONTEXT.md, and NEXT.md to current state. Redact
-   secrets; reference rather than duplicate.
+   secrets; reference rather than duplicate. The docs are shared across a project's
+   sessions: another live session may hold state you know nothing about, and may
+   even be handing off concurrently. Preserve other work streams' sections (rewrite
+   only what this session owns; cut a stream only when it is provably dead), and on
+   a modified-since-read conflict re-read and merge with anchored edits -- a
+   wholesale rewrite clobbers the other session's stream.
 4. Ensure `.handoff` is gitignored.
 5. Sync any existing agent-instruction files (AGENTS.md, CLAUDE.md, ...).
 6. If the `retro` skill is installed, invoke it as the session's self-improvement pass,
