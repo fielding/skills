@@ -5,7 +5,8 @@ description: >-
   to the inner loop: local, before the branch is ever shared. A
   language-agnostic, config-driven pre-submission code-gating pipeline. Runs the
   floor (build/lint/test/fmt/doc), an SSM audit, the conventions pack, optional
-  mutation testing, and an AI-tells sweep against a stated intent; loops to
+  mutation testing, an AI-tells sweep, and a CODEOWNERS coverage gate against a
+  stated intent; loops to
   green; pushes a loose branch; runs the review crew; folds findings; factors
   atomic commits once; opens the PR; runs independent label review; babysits the
   PR to merge; and retros the learnings. Every variable bit -- gate commands,
@@ -288,7 +289,8 @@ and review state; they drive the deltas.
 
   Either branch: re-run stage 11 after the push, since any push stales the labels.
 - **Stage 10 open PR** -- do **not** `gh pr create`; the PR exists. If intent materially
-  diverged from the PR body, rewrite the body with **`voice`** + **`scrub-ai-tells`** and
+  diverged from the PR body, rewrite the body with **`voice`** (its own revision pass;
+  `scrub-ai-tells` only on un-voiced text) and
   `gh pr edit <pr> --body-file <voiced>.md`; otherwise leave the body untouched. The
   presentation pass fires only when you are actually changing the body.
 - **Stage 11 labels** -- this is the *common* path here: the PR already carries labels and
@@ -320,7 +322,7 @@ stage that calls it will run.
 | `intent` | stage 0 | always |
 | `state-space-minimization` | stage 2 | unless skipped |
 | conventions pack | stage 3 | the pack for the **detected language** (below) |
-| `scrub-ai-tells` | stages 5, 10 | always (stage 10 runs even if 5 is skipped) |
+| `scrub-ai-tells` | stage 5 (stage 10 only for un-voiced body text) | always |
 | `atomic-changes`, `git-factor` | stage 9 | always |
 | `voice` | stage 10 | always |
 
@@ -498,8 +500,38 @@ Apply the returned fixes on the main thread, then re-check. This must be empty h
 (and later on the PR body and commit messages). This is the *code* hygiene pass; the
 *presentation* scrub (the PR body) rides with voice at stage 10.
 
-> **[LOOP 1-5 until green, capped at the floor `max-rounds` from config.]**
-> Run the floor through the hygiene sweep, apply fixes, re-run from the floor.
+### Stage 5b: CODEOWNERS coverage gate ⚙
+
+Auto-skips when the repo has no `CODEOWNERS`. Otherwise this is a deterministic,
+blocking check on the diff's *ownership*: it fails when a change silently drops a
+required-reviewer gate — a file moved or renamed out of an owned path, or a new
+file added beside a specifically-owned sibling without inheriting that owner. A
+compat re-export can leave the public import path *looking* owned when the rule no
+longer covers it, so a human reviewer misses the dropped gate. This catches it
+before the branch is ever pushed.
+
+```bash
+uv run --project ~/src/hack/review-crew python -m review_crew.codeowners_check \
+  --worktree . --base <base>
+```
+
+Exit 1 blocks like any floor failure. Resolve it one of two ways, never by
+ignoring it: if the ownership move was unintended, restore coverage; if it was
+intended, extend `CODEOWNERS` so the rule follows the code to its new path. Then
+re-run. (The review crew at stage 7 also surfaces this via the same analysis, but
+that is an advisory second net — this stage is the hard gate.)
+
+If the module is absent (`No module named review_crew.codeowners_check`), do not
+skip the stage and do not claim it ran. Do the same analysis by hand and record it
+in the ledger as a manual pass: for every changed path, the rule that matches at
+base and at head; any file moved or renamed out of an owned path; any new file
+beside a specifically-owned sibling that did not inherit the owner. Then file a
+proposal to build the module. Ownership *policy* questions the rules' comments
+raise (a comment says "transformers that lift config into runtime shape" are owned
+and a new file arguably qualifies) are ask-user, not a gate failure.
+
+> **[LOOP 1-5b until green, capped at the floor `max-rounds` from config.]**
+> Run the floor through the CODEOWNERS coverage gate, apply fixes, re-run from the floor.
 > Each pass should converge; if it hits the configured cap still dirty, stop and
 > surface what is still failing rather than looping forever.
 
@@ -642,9 +674,15 @@ Now turn `intent.md` into the user-facing PR body. **This is the presentation
 pass** -- the first time voice and scrub touch the intent:
 
 1. Invoke **`voice`** to rewrite `intent.md`'s What/Why into the PR body in the
-   user's register.
-2. Invoke **`scrub-ai-tells`** on that body (em-dash sweep included).
-3. Create the PR:
+   user's register, and run that skill's own revision pass (it carries the
+   AI-tell and em-dash sweep for voiced text).
+2. Do **not** run `scrub-ai-tells` over the voiced body: its lane boundary
+   reserves it for un-voiced prose, and it would undo choices the voice pass made
+   on purpose. Scrub only body text that was never voiced (a template's fixed
+   sections, a pasted excerpt). Either way, the em-dash count must be zero.
+3. Shape the body to the repo's PR template and CONTRIBUTING rules (title form,
+   summary bullets in commit order, sections removed when unused, assignee), then
+   create the PR:
 
 ```bash
 git push --force-with-lease origin <branch>
