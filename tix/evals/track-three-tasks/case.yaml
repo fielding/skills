@@ -1,0 +1,25 @@
+schema_version: "1.1"
+name: track-three-tasks
+description: "Repo with no .tix store; user dictates three tasks and one dependency between them."
+expected_outcome: |
+  The agent initialises a store (`tix init`), creates exactly three issues with `tix add`
+  (retry/backoff in fetch.py, the --retries CLI flag, README docs), and models the one stated
+  dependency with the documented syntax `tix dep add <A> blocks <B>` in the correct direction
+  (A, the retry work, blocks B, the flag). It does not invent extra dependencies. It then
+  tells the user what is ready now (A and C) and that B is blocked until A is done, ideally
+  by showing `tix ready`. .tix/issues.jsonl ends up with three issue records and one dep
+  record with kind "blocks".
+runs: 3
+tags: [tix, create]
+execution:
+  max_turns: 18
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Bash]
+  prompt: |
+    Track these three tasks with tix so I can see what's unblocked:
+    (A) add exponential-backoff retry to get() in fetchkit/fetch.py,
+    (B) expose the max-retries knob as a --retries flag in fetchkit/cli.py,
+    (C) document the new flag in the README.
+    B depends on A being done first. That's the only ordering constraint.
+context:
+  scaffold_script: setup.sh

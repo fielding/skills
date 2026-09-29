@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: review-webhook-module
+description: "Review a webhook handler and a flag-gated component against the TypeScript conventions; six planted violations."
+expected_outcome: |
+  Reads src/webhooks.ts, src/SharingPanel.tsx, src/flags.ts and returns a review (no edits)
+  that names, with location and the convention's fix: (1) `SEND_OUTCOMES` has `rate_limited`
+  but `SendOutcomeSchema` does not, so union and runtime schema drifted (extend both as one
+  edit); (2) `if (!enabled)` on a `boolean | undefined` flag renders the loading window as
+  "off" (branch `=== undefined` as its own state); (3) `db.deliveryLog.create(...)` is not
+  awaited before responding while `enqueueDelivery` depends on it (await it, or make the
+  consumer upsert idempotently); (4) dedupe is SELECT-then-INSERT (a race; use a UNIQUE
+  constraint on externalId and catch the violation) and it runs after the nondeterministic
+  `classifyMessage` call (replay checks run first); (5) `verifySignature` fails open when the
+  secret is missing (return 5xx) and compares HMACs with `===` (use
+  `crypto.timingSafeEqual`); (6) `new Date(event.occurredOn)` on a date-only string shifts a
+  day in western timezones (split the string or use a plain-date type). Bonus: `console.log`
+  dumping headers and body (structured logger, no header/payload dumps), error responses with
+  no machine-readable `code`.
+runs: 3
+tags: [review, typescript]
+execution:
+  max_turns: 14
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Review this against our TypeScript conventions before I open the PR. The files are
+    src/webhooks.ts, src/SharingPanel.tsx and src/flags.ts (package.json is there too). Don't
+    edit anything, just the review: what's wrong, where, and what it should be instead.
+context:
+  scaffold_script: setup.sh

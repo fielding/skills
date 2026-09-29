@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: csv-change-missing-why
+description: "No transcript and no stated why: derive the What from the diff, then ask for the Why instead of inventing one."
+expected_outcome: |
+  No transcript exists and the prompt gives no motivation. The skill runs git status/diff,
+  states the What from the diff without asking (semicolon delimiter, header row removed,
+  QUOTE_ALL, CRLF line endings, test updated to match), and then asks targeted questions for
+  the parts the diff cannot show: why this format (which downstream consumer needs it), what
+  is deliberately out of scope, and any decision a reviewer would second-guess (e.g. dropping
+  the header vs. making it optional). It does not present an invented Why ("for European
+  locales", "for Excel") as fact; offering candidates as questions is fine. Writing a partial
+  intent.md with Why marked as pending is acceptable but not required. Touches no source.
+runs: 3
+tags: [gate, git]
+execution:
+  max_turns: 16
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
+  prompt: |
+    Establish intent for what's on this branch. The changes are uncommitted in the working
+    tree. We're in a throwaway checkout, so if you write the intent file put it at intent.md
+    in the repo root rather than /tmp.
+context:
+  scaffold_script: setup.sh

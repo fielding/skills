@@ -1,0 +1,36 @@
+schema_version: "1.1"
+name: scrub-commit-message
+description: "Scrub a pasted commit message; only the message comes back, so the text itself is graded."
+expected_outcome: |
+  Returns the commit message with the tells removed: no em dashes, no "leverages", "in order to",
+  "robust", "It's worth noting", "Additionally", "this ensures that", "seamlessly". The subject
+  line, the 503 detail, the 5-attempt cap, the .part cleanup, the two constants, the `Fixes:`
+  label and the Co-Authored-By trailer all survive verbatim in meaning. Because this is a commit
+  message, narrating the change ("previously ... now ...") is correct and is kept, not flattened
+  into present-state description. No commentary around the message.
+runs: 3
+tags: [writing, commit]
+execution:
+  max_turns: 8
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Scrub the AI tells out of this commit message. Reply with only the scrubbed message, no
+    commentary before or after it.
+
+    Add retry with backoff to the export uploader
+
+    This change leverages an exponential backoff strategy in order to make
+    uploads more robust — previously a single 503 from the storage API would
+    fail the whole export. It's worth noting that the retry budget is capped
+    at 5 attempts so a dead endpoint can't hang the job forever.
+
+    Additionally, this ensures that partial uploads are cleaned up seamlessly
+    on the final failure — no more orphaned .part files in the bucket.
+
+    - Adds `RETRY_MAX_ATTEMPTS` (default 5) and `RETRY_BASE_MS` (default 200)
+    - Adds cleanup of `.part` objects on terminal failure
+    - Adds unit tests for the backoff schedule
+
+    Fixes: #4821
+    Co-Authored-By: Priya Natarajan <priya@example.com>

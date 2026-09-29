@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: detect-only-report
+description: "Detect-only mode: flag every tell in draft.md with quote, pattern name and fix, without editing."
+expected_outcome: |
+  Reads draft.md and produces a findings list, one entry per tell: a short quote, the pattern
+  it matches (em dash, filler phrase, announce opener, fake-strong verb, parallel list, weasel
+  attribution, stacked hedge, disclaimer, importance puffery, colon reveal, negative-listing
+  kicker), and the suggested fix. Makes no edits and writes no files. Does not score the text
+  or pronounce it AI-written; "Studies show" is flagged as unsourced, not given a source.
+runs: 3
+tags: [writing, detect]
+execution:
+  max_turns: 10
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    /scrub-ai-tells Detect only: flag the AI tells in draft.md for me, don't edit it. I want to
+    see what you'd change before you touch anything.
+context:
+  scaffold_script: setup.sh

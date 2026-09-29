@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: auth-flow-walkthrough
+description: "New team member wants to understand request auth end to end before touching it."
+expected_outcome: |
+  Large ask, so the first turn orients: reads auth.py, creates a scoped
+  .tutor/Understanding-Checklist.md that already names the branches to understand (missing
+  header, malformed header/token, bad signature, expiry with clock skew, not-before, missing
+  scopes) with nothing Verified, includes or sets up a visualization of the flow, and ends
+  with a calibration or prediction question rather than narrating the whole file.
+runs: 3
+tags: [teaching, code]
+execution:
+  max_turns: 14
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    New on this team and I need to actually understand how request auth flows through our
+    orders API before I touch it — walk me through auth.py end to end so it sticks. I don't
+    want a summary I'll forget in an hour.
+context:
+  scaffold_script: setup.sh

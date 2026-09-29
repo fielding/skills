@@ -1,0 +1,22 @@
+schema_version: "1.1"
+name: buggy-cache-understand
+description: "Learner asks to be taught why a memoize decorator produces stale numbers, not to have it patched."
+expected_outcome: |
+  Opens a teaching session: creates .tutor/Understanding-Checklist.md, orients (asks what the
+  learner already knows), starts problem-first instead of dumping the fix, and pauses to check
+  understanding. Does NOT hand over a corrected file. Steers toward the real mechanism: one
+  cache dict shared by every decorated function (the mutable default `_store`), keyed only by
+  call args, so monthly_revenue("2026-01") and monthly_refunds("2026-01") collide.
+runs: 3
+tags: [teaching, code]
+execution:
+  max_turns: 14
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    I keep getting stale numbers out of our reports service and I think it's this memoize
+    decorator. Don't just patch it for me — teach me how this caching code actually works and
+    why it's misbehaving, so I genuinely understand it and could spot the same class of bug
+    next time. The file is cache.py.
+context:
+  scaffold_script: setup.sh

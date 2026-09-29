@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: scrub-draft-in-place
+description: "Scrub a tell-dense README draft in place; grade the file, the preserved facts, and the report."
+expected_outcome: |
+  Reads draft.md, rewrites it in place with Edit (or a single Write), and reports what changed.
+  Every em dash is gone; the lexical tells (leverages, in order to, comprehensive, robust,
+  seamlessly, Additionally, Furthermore, Note that, delves, Ultimately) and structural tells
+  (the "Here's the thing" opener, "serves as a centralized hub", the identical "Enables ..."
+  bullets, the hedged "might potentially ... could", the disclaimer, "marks a pivotal moment",
+  the "The result:" colon reveal, the "Not faster. Not smaller. Just correct." kicker) are
+  removed or rephrased. The code block, the numbers (1.4s, 300ms, 40k, two minutes) and the
+  user's claims (null-timestamp rows dropped, weekly counts mismatch) survive untouched.
+  "Studies show ..." has no source in the text, so it is flagged to the user rather than
+  given an invented citation. The reply is a brief report: what changed, and the flagged claim.
+runs: 3
+tags: [writing, edit]
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    Scrub the AI tells out of draft.md, in place. It's the README for our new export pipeline
+    and it reads like a bot wrote it. Don't change what it says, just how it says it, and tell
+    me what you changed when you're done.
+context:
+  scaffold_script: setup.sh

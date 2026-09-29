@@ -1,0 +1,5 @@
+[project]
+name = "reportkit"
+version = "1.4.0"
+description = "Ledger report builders."
+requires-python = ">=3.11"

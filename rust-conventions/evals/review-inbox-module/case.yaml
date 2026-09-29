@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: review-inbox-module
+description: "Review a small crate against the Rust conventions; six planted violations must be named, none edited."
+expected_outcome: |
+  Reads Cargo.toml, src/lib.rs, src/inbox.rs, src/cli.rs and returns a review (no edits) that
+  names, with location and the convention's fix: (1) `.lock().unwrap()` x3 and the test's
+  `.unwrap()` -> `.expect("<invariant>")`; (2) `Box<dyn std::error::Error>` in the consumer
+  trait and the `Other(Box<dyn Error>)` joker variant, plus the stringly `lease: String` ->
+  associated types (and `Infallible` where a transport cannot fail); (3) `#[from]` on both
+  variants and `{0}` inlining the source in `Display` -> `#[source]` field, `.map_err` at the
+  call site, `Display` without the cause; (4) `#[inline]` on `new` -> remove; (5) derived
+  `Debug` on `InboundMessage` (body + reply_token) logged via `tracing::warn!(?msg)` ->
+  hand-written `Debug` that drops the payload, a redacting wrapper for the token, and not
+  `warn`; (6) `todo!()` on the user-reachable `Replay` command -> return an `Err(Unconfigured)`
+  style variant. Bonus: mechanism-named `RabbitMqConsumer`, two locks for a joint invariant,
+  the inline `use std::mem`, the what-comments, inline `mod tests` instead of `inbox_test.rs`.
+runs: 3
+tags: [review, rust]
+execution:
+  max_turns: 14
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Review this crate against our Rust conventions before I open the PR. Files are Cargo.toml,
+    src/lib.rs, src/inbox.rs and src/cli.rs. Don't edit anything, just give me the review:
+    what's wrong, where, and what it should be instead.
+context:
+  scaffold_script: setup.sh

@@ -1,0 +1,19 @@
+schema_version: "1.1"
+name: what-next-ready
+description: "Existing .tix store where the highest-priority issue is blocked; user asks what to pick up next."
+expected_outcome: |
+  The agent consults `tix ready` (not just `tix list`) and recommends "Set up CI pipeline
+  (GitHub Actions)": it is ready, and closing it unblocks the coverage gate. It does not
+  recommend "Add coverage gate to CI" even though that has priority 1, because it is blocked
+  by the CI pipeline issue; it may mention CONTRIBUTING.md as the other ready item. A short
+  answer naming the issue (id and/or title) and the blocking relationship is ideal.
+runs: 3
+tags: [tix, ready]
+execution:
+  max_turns: 8
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Bash]
+  prompt: |
+    What should I pick up next in this repo? We track work with tix here.
+context:
+  scaffold_script: setup.sh

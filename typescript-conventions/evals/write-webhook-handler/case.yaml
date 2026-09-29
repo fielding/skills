@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: write-webhook-handler
+description: "Write a signed-webhook handler from scratch; fail policy and idempotency must follow the conventions."
+expected_outcome: |
+  Returns Express + TypeScript code in which: signature verification runs first and fails
+  closed (a missing `PROVIDER_WEBHOOK_SECRET` returns 5xx, never accepts), HMACs are compared
+  with `crypto.timingSafeEqual`, idempotency is a UNIQUE constraint on the event id with the
+  insert's unique-violation caught and turned into an idempotent 200 (no SELECT-then-INSERT),
+  the dedupe/insert happens before any nondeterministic or external work, the persist is
+  awaited before responding, unexpected errors return 500 so the provider retries, error
+  bodies carry a machine-readable `code`, and there is no `console.log`.
+runs: 3
+tags: [codegen, typescript]
+execution:
+  max_turns: 8
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Write a small Express + TypeScript handler for an inbound payment-provider webhook. It
+    needs to verify the HMAC-SHA256 signature from the `x-provider-signature` header using
+    `PROVIDER_WEBHOOK_SECRET`, make sure we never process the same event id twice even if the
+    provider retries concurrently, persist the event (assume a Postgres client `db` and a
+    `webhook_events` table you can shape), and respond. No repo yet, just reply with the code
+    and a short note on the choices you made.

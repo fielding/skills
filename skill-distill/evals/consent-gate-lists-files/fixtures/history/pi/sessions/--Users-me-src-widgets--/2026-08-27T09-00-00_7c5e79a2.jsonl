@@ -1,0 +1,5 @@
+{"type": "session", "version": 3, "id": "7c5e79a2-7998-578b-805b-df4e56f598ff", "timestamp": "2026-08-27T09:00:00Z", "cwd": "/Users/me/src/widgets"}
+{"type": "message", "id": "u1", "parentId": null, "timestamp": "2026-08-27T09:00:00Z", "message": {"role": "user", "content": [{"type": "text", "text": "spike a rust rewrite of the parser in a git worktree so my checkout stays clean. just the tokenizer, and benchmark it against the python one"}]}}
+{"type": "message", "id": "a1", "parentId": "u1", "timestamp": "2026-08-27T09:04:00Z", "message": {"role": "assistant", "content": [{"type": "text", "text": "Created worktree ../widgets-rs-spike on branch spike/rust-tokenizer. Tokenizer ported; benchmark: 41x faster on the 10MB corpus."}]}}
+{"type": "message", "id": "u2", "parentId": "a1", "timestamp": "2026-08-27T09:09:00Z", "message": {"role": "user", "content": [{"type": "text", "text": "good. leave the worktree, I'll look tomorrow"}]}}
+{"type": "message", "id": "a2", "parentId": "u2", "timestamp": "2026-08-27T09:13:00Z", "message": {"role": "assistant", "content": [{"type": "text", "text": "Left the worktree in place."}]}}

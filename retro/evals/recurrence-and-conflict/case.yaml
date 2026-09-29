@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: recurrence-and-conflict
+description: "An existing retro note already holds two rulings; today's session repeats one and contradicts the other."
+expected_outcome: |
+  Phase 2's novelty check means grepping the existing note first. .handoff/retro/retro-2026-08-12.md
+  already records (a) migrations must be reversible (maya, PR #188, Seen: 1x) and (b) JSON
+  field names are snake_case (maya, PR #190). Today's PR #231 thread has maya repeating (a)
+  -> bump its Seen counter and add PR #231 as a source instead of writing a duplicate; and
+  priya (frontend lead) ruling camelCase for new endpoints, which maya endorses -> a genuine
+  CONFLICT with (b): flag it (Tension / Settled, both sources named) for the operator and never
+  silently overwrite the snake_case entry. The new pytest-xdist/sqlite `:memory:` gotcha is a
+  fresh domain learning for today's note. No config exists, so nothing goes to a KB, no skill
+  is edited, no ticket is filed; the report groups results by destination and calls out the
+  conflict.
+runs: 3
+tags: [retro, dedupe]
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
+  prompt: |
+    Retro time for the PR #231 session on ledgerd. I was not in that session, so reconstruct
+    from git log, the gate artifacts in .gate/runs/2026-09-23/ and the docs in .handoff/. We
+    have kept retro notes on this project before, so check what is already written down.
+context:
+  scaffold_script: setup.sh

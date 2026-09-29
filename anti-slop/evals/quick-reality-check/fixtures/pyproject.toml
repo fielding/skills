@@ -1,0 +1,11 @@
+[project]
+name = "notekeeper"
+version = "1.0.0"
+description = "Encrypted local-first notes CLI"
+requires-python = ">=3.10"
+dependencies = [
+  "cryptography>=42",
+]
+
+[project.scripts]
+notekeeper = "notekeeper.cli:main"

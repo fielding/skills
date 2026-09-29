@@ -1,0 +1,25 @@
+schema_version: "1.1"
+name: quick-reality-check
+description: "Friend's vibe-coded notes CLI; --quick (universal layer only) reality check ending in .antislop/VERDICT.md."
+expected_outcome: |
+  Sets up .antislop/{prompts,findings,evidence}, runs the inventory topic first (stack.md says
+  Python), then the eight universal topics as per-topic subagents, skips the Python language
+  pack because of --quick, runs the severity-normalization pass, and synthesizes
+  .antislop/VERDICT.md in the template's format with a Substance Score and Go/No-Go. The
+  verdict names the two planted red flags: the README's AES-256 "encrypted at rest" promise
+  is a stub (notekeeper/crypto.py raises NotImplementedError on every function) and
+  notekeeper/cli.py hardcodes a live-looking SYNC_API_KEY (redacted in every file the run
+  writes). Score lands below 60 (Mirage or Abandon) and the call is NO-GO. Ends with the
+  completion box and the one-paragraph verdict inline.
+runs: 3
+tags: [audit, orchestration]
+execution:
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Bash, Write, Agent]
+  prompt: |
+    A friend handed me this notes CLI (it's checked out in the current directory) and wants
+    me to "look it over" before they show it to customers. I don't want a deep audit yet,
+    just the fast reality check: anti-slop --quick. Is this real software or a mirage?
+context:
+  scaffold_script: setup.sh

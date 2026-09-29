@@ -1,0 +1,11 @@
+[project]
+name = "ledgerd"
+version = "0.7.0"
+requires-python = ">=3.12"
+dependencies = ["fastapi", "sqlalchemy", "alembic", "uvicorn"]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.ruff.lint]
+select = ["E", "F", "B"]

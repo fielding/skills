@@ -1,0 +1,38 @@
+schema_version: "1.1"
+name: floor-finds-planted-failures
+description: "Scoped to stages preflight-0-1: operator declines the missing companions, hands over intent.md, and asks gate to run through the floor and stop; the config-driven floor must surface the planted ruff error and failing test."
+expected_outcome: |
+  Preflight runs and reports the missing companion skills; because the operator has said
+  they will not install them today and wants only the floor, gate records that and carries
+  on. Stage 0 uses the hand-written intent.md instead of the intent skill. Stage 1 resolves
+  the floor from the repo's AGENTS.md Gate section (.venv/bin/ruff check ., .venv/bin/ruff
+  format --check ., .venv/bin/pytest -q), runs every one of them even after the first
+  fails (the operator asked for the complete list), and reports both planted
+  failures: ruff F401 (unused `json` import) in src/shoplite/pricing.py and the failing
+  tests/test_pricing.py::test_bulk_discount_at_threshold (the discount uses `qty >
+  BULK_THRESHOLD` where intent.md's Decisions say the threshold is inclusive). It stops
+  after the floor as asked: no fixes, no commit, no push, and a per-stage ledger that does
+  not claim any later stage ran.
+runs: 3
+tags: [gating, floor]
+execution:
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Bash, Write, Edit, Agent]
+  prompt: |
+    Run gate on the branch in the current directory (feature/bulk-discount, base main) before
+    I push it. Some context on this box:
+
+    - None of gate's companion skills are installed here (no intent, state-space-minimization,
+      scrub-ai-tells, atomic-changes, git-factor, voice) and I am not installing them today.
+      Preflight will come up short; report what is missing and carry on.
+    - I wrote the stage-0 intent by hand: it is `intent.md` at the repo root. Use it as this
+      run's intent.md.
+    - /tmp is not writable here and this directory is already a scratch checkout, so keep
+      gate's scratch files under `.gate/` in the repo and run in place, no separate worktree.
+
+    Run the pipeline through the floor and stop right after it. Run every floor command
+    even when an earlier one fails (I want the complete list, not the first failure), then
+    tell me exactly what fails and where. Do not fix anything, do not commit, do not push.
+context:
+  scaffold_script: setup.sh

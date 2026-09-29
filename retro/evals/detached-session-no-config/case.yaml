@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: detached-session-no-config
+description: "Retro reconstructed from git log, a gate run and the handoff docs, with no operator config: domain half to the project note, skill half report-only."
+expected_outcome: |
+  No ~/.config/gate/config.toml exists, so Phase 0 resolves: no knowledge_base match (domain
+  half is project-local only), no skills_root/proposal_cmd (skill half is report-only), and
+  the existing repo-local .handoff/ as the note location. The agent reconstructs the session
+  from git log, .gate/runs/2026-09-23/ and .handoff/, then:
+  - writes .handoff/retro/retro-<date>.md containing the domain learnings: maya's ruling
+    that every alembic migration needs a real downgrade() (attributed to maya, sourced to
+    PR #212) and the ruff B008 -> Annotated fix;
+  - reports the skill-half finding (gate's floor stage ran a bare `pytest` in a uv project;
+    it should detect uv.lock and use `uv run pytest`) as a proposal in the summary, without
+    editing any SKILL.md or inventing a tracker (`tix add`);
+  - drops trivia (the UserRepo -> AccountRepo rename) and does not promote the unconfirmed
+    `{"data": ...}` envelope observation to a convention;
+  - ends with a short report grouped by destination, listing what was considered and dropped.
+runs: 3
+tags: [retro, routing]
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
+  prompt: |
+    Run a retro on yesterday's ledgerd session (the PR #212 work). I wasn't driving that
+    session and this context is fresh, so reconstruct it from the repo: git log, the gate run
+    artifacts under .gate/runs/2026-09-23/, and the handoff docs in .handoff/. Bank whatever
+    is worth keeping.
+context:
+  scaffold_script: setup.sh

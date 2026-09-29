@@ -1,0 +1,22 @@
+schema_version: "1.1"
+name: catch-me-up-read
+description: "Existing .handoff/ docs in the repo; user asks to be caught up on where things stand."
+expected_outcome: |
+  Read mode. The agent finds the existing repo-local .handoff/ and reads STATUS.md, NEXT.md,
+  DECISIONS.md and CONTEXT.md before answering, then gives a short resume-oriented summary:
+  the upstream-timeout flag is parsed but not wired in, TLS is blocked on the ops wildcard
+  cert (OPS-4471), the first next action is wiring the flag into proxy/dial.go, and the Go
+  1.23 / mise gotcha. It treats .handoff/archive/STATUS-2026-06.md as history (it says TLS
+  was "done" with a dev cert, which the current STATUS supersedes) and does not rewrite or
+  edit any of the handoff files.
+runs: 3
+tags: [handoff, read]
+execution:
+  max_turns: 10
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    Back on this after a week off. Catch me up: what were we doing on kestrel, what's blocked,
+    and what should I pick up first?
+context:
+  scaffold_script: setup.sh

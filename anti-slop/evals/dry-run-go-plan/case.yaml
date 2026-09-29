@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: dry-run-go-plan
+description: "--dry-run on a Go repo: print the wave plan, note the unbuilt Go pack, write nothing, spawn nothing."
+expected_outcome: |
+  Recognises the repo as Go (go.mod), prints the plan only: inventory first, then the eight
+  universal topics (u02-u09), then the language pack, which for Go is stubbed, so the plan
+  says the toolchain checks will not run and the verdict will carry reduced confidence rather
+  than fabricated Go findings, then severity normalization, then synthesis into
+  .antislop/VERDICT.md and a domain recommendation. Because of --dry-run it creates no
+  .antislop directory, writes no file and spawns no subagent.
+runs: 3
+tags: [audit, judgment]
+execution:
+  max_turns: 12
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Skill, Bash, Write, Agent]
+  prompt: |
+    Before I burn a pile of subagents on it: anti-slop --dry-run on the repo in the current
+    directory. Just show me the plan for what a full run would do here.
+context:
+  scaffold_script: setup.sh

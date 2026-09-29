@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: preflight-missing-companions
+description: "Plain 'run gate' on a fresh machine: preflight finds every companion skill missing and gate stops with the install set instead of running a theater pipeline."
+expected_outcome: |
+  The first deterministic action is the preflight probe of the skills store
+  (${SKILLS_DIR:-$HOME/.agents/skills}). In this sandbox none of gate's companions exist, so
+  the probe reports intent, state-space-minimization, scrub-ai-tells, atomic-changes,
+  git-factor and voice missing, prints the install lines, notes that the detected language
+  is Python so the conventions pack is only a warning (the Python pack is planned, not
+  required), and STOPS before the pipeline: no push, no commit, no edits, and no claim that
+  any starred stage ran. Running the floor anyway is tolerable; presenting pipeline results
+  as if the companions had run is not.
+runs: 3
+tags: [gating, judgment]
+execution:
+  max_turns: 32
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Bash, Write, Edit, Agent]
+  prompt: |
+    Run gate on this before I push. The branch is feature/bulk-discount in the current
+    directory; base is main.
+context:
+  scaffold_script: setup.sh

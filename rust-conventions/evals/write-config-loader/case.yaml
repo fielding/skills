@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: write-config-loader
+description: "Write a small config loader from scratch; the error type and call sites must follow the conventions."
+expected_outcome: |
+  Returns Rust code for `load_config` plus a module-local `Error` enum derived with thiserror,
+  variants wrapping `std::io::Error` and `toml::de::Error` through `#[source]` fields (no
+  `#[from]`), Display strings that do not inline the source, `.map_err(|source| Error::...)` at
+  each fallible call, no `.unwrap()`, no `Box<dyn Error>`/`anyhow`, no `#[inline]`, imports
+  grouped std / external / crate at the top. If tests are included they live in a sibling
+  `config_test.rs` via `#[path]`. Comments, if any, say why not what.
+runs: 3
+tags: [codegen, rust]
+execution:
+  max_turns: 8
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Following our Rust conventions, write me a small Rust function `load_config(path: &Path) -> Result<Config, Error>` that reads
+    a TOML file and deserializes it into `Config { bind_addr: String, workers: usize }`. Include
+    the error type and the imports; assume serde and the toml crate are available. There's no
+    project here yet, just reply with the code.

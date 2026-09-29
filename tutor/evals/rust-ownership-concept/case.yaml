@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: rust-ownership-concept
+description: "Python developer wants to actually retain Rust ownership and borrowing, at intern depth."
+expected_outcome: |
+  Large open-ended ask, so the first turn orients: creates a scoped
+  .tutor/Understanding-Checklist.md with nothing Verified, and either anchors ownership to the
+  learner's Python mental model (saying where the analogy breaks) or asks diagnostic questions
+  tied to that Python background. One step, then a question; never a wall of text.
+runs: 3
+tags: [teaching, concept]
+execution:
+  max_turns: 10
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    I'm a Python dev and I keep bouncing off Rust's ownership and borrowing — every explanation
+    I read makes sense in the moment and then evaporates. Teach it to me properly so I can
+    actually explain it back. Explain like I'm an intern.
