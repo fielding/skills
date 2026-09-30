@@ -742,6 +742,17 @@ on each thread citing the commit.
 After any push: re-run stage 11 (labels stale on a push) and record every disposition
 in the finding ledger. Loop until merged.
 
+**Merge-queue branches.** When the base is behind a GitHub merge queue, nothing merges
+directly: `gh pr merge` only arms auto-merge, and GitHub enqueues the PR once every
+branch rule is satisfied. Read the rules once (`gh api repos/<owner/repo>/rules/branches/<base>`):
+`required_review_thread_resolution` is the usual silent blocker, so an all-green PR that
+sits at `mergeStateStatus: BLOCKED` with auto-merge on is waiting on an unresolved thread,
+not on CI. Resolve the threads you have addressed (or ask the reviewer to). Once the PR is
+enqueued, `autoMergeRequest` reads null; that is the hand-off to the queue, not an
+ejection. Watch the entry itself (GraphQL `mergeQueue(branch:"<base>") { entries }`) and
+its checks (`gh run list --event merge_group`) until the PR reports MERGED. Merging or
+enqueueing is the operator's call unless they have said otherwise; gate watches.
+
 (The repo's AGENTS.md reviewer notes name the bots and the humans and what each
 tends to focus on; gate hardcodes none of them.)
 
