@@ -265,6 +265,13 @@ and review state; they drive the deltas.
   clean round, not per fix**, to keep bot/human churn down.
 - **Stage 7 crew** -- run in PR mode against the number so the crew gets PR context:
   `... review <owner/repo> <pr> --description-file /tmp/<branch>-intent.md --no-post`.
+  Know what the crew reads in PR mode: it takes intent from the **live PR body**, not
+  the description file (`--description-file` feeds branch mode only), and its explicit
+  scanner accepts an `Intent:` line or the first `## ...why...`-style heading it meets.
+  A body whose first such heading is not the intent ("## Why the bodies were missing")
+  is quoted verbatim as the intent. So before the run, make the PR body lead with
+  `Intent: <one-liner>` (or `gh pr edit --body-file` it in), and keep secondary
+  headings free of intent/goal/purpose/why words.
 - **Stage 9 atomic commits -- CONDITIONAL on review activity.** Force-pushing rewritten
   history onto a PR that already has review threads detaches them and re-triggers bots.
   So check first, deterministically:
