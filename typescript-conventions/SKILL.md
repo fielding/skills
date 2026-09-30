@@ -11,9 +11,12 @@ description: >-
   narrow cache invalidation, deterministic test identifiers, and
   PII/secret-free structured logging. Cross-references
   state-space-minimization for the language-agnostic state-shrinking
-  principles. Use when writing or reviewing TypeScript code (*.ts, *.tsx,
-  package.json) in a project that has not already declared its own
-  conventions.
+  principles. Use this whenever you are about to write or review TypeScript
+  or JavaScript, before the first line: Express or Next handlers, webhooks,
+  React components, data-layer code, tests, anything in *.ts, *.tsx or a
+  package.json project. Trigger even when the user asks only for code and
+  never says "conventions" or "review", unless the project has declared its
+  own conventions.
 allowed-tools: Read, Grep, Glob, Bash, Skill
 ---
 
